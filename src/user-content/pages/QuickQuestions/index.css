@@ -1,0 +1,13 @@
+.QuestionContainer {
+    margin-top: 50px;
+    display: grid;
+    justify-items: center;
+    gap: 50px;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(
+            250px,
+            1fr
+        )
+    );
+}

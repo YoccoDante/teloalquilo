@@ -1,0 +1,20 @@
+.link {
+  text-decoration: none;
+  color: inherit;
+  margin-right: 20px;
+}
+
+/* xs */
+@media (max-width: 475px) {
+  .logo {
+    font-size: 26px;
+    flex-grow: 1;
+  }
+}
+/*Bigger than xs*/
+@media (min-width: 475px) {
+  .logo {
+    font-size: 36px;
+    flex-grow: 1;
+  }
+}

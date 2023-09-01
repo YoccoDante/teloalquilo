@@ -1,0 +1,14 @@
+.LoaderContainer {
+    display: grid;
+    align-items: center;
+    justify-items: center;
+}
+.GridLoader {
+    position: relative;
+    width: 200px;
+    filter: invert();
+}
+.WedgesLoader {
+    position: relative;
+    width: 400px;
+}

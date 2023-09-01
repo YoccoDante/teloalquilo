@@ -1,0 +1,72 @@
+.ProductDetail {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    flex-direction: row;
+}
+.LeftSide{
+    height: 100vh;
+    flex: 1 1 70%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 25px;
+}
+.RightSide {
+    position: sticky;
+    right: 0;
+    flex-direction: column;
+    flex: 1 1 30%;
+    max-height: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    overflow: scroll;
+}
+.Title {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    text-align: center start;
+    font-size: 26px;
+    font-weight: 700;
+    text-transform: capitalize;
+    margin-bottom: 5px;
+}
+.Price {
+    margin-top: 0;
+}
+.ProductDetailRate {
+    margin-left: 15px;
+}
+
+.Leyend {
+    font-size: larger;
+    font-weight: 500;
+}
+
+.Ubi {
+    text-transform: capitalize;
+}
+
+.Details {
+    border-radius: .5em;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+
+.MakeComment {
+    position: sticky;
+    border: 1px solid;
+    bottom: 0;
+    left: 0;
+    flex: 1 1 10%;
+    width: 100%;
+}
+.MakeCommentText {
+    height: 100px;
+}
+.CommentBoxBox {
+    width: 100%;
+    height: 100%;
+    overflow: scroll;
+}

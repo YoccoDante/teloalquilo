@@ -1,0 +1,7 @@
+.InvertImage {
+    filter: invert();
+    margin-bottom: 15px;
+}
+.SocialMediaIcon {
+    width: 100%;
+}

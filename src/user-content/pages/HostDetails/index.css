@@ -1,0 +1,63 @@
+.CustomerPage dt {
+    font-size:24px;
+    font-weight:700;
+    margin-left: 15px;
+    padding:0;
+}
+.CustomerPage dd {
+    font-size: 16px;
+}
+/* xs */
+@media (max-width: 475px) {
+    /*Image*/
+    .CustomerPageImage {
+        position:relative;
+        display:flex;
+        width:100%;
+        height:300px;
+        justify-content: center;
+        align-items: center;
+        overflow:hidden;
+    }
+    .CustomerPageImage > p {
+        position:absolute;
+        font-size:34px;
+        font-weight:700;
+        width: 100%;
+        text-align: center;
+        bottom:0;
+        color:#fff;
+        z-index:1;
+    }
+    .CustomerPageImage > img {
+        filter: brightness(.5);
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        z-index: 0;
+    }
+    /*Qualify Button*/
+    .QualifyArea {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+    }
+    .QualifyButton {
+        border: none;
+        background-color: rgba(0, 120, 255, .5);
+        height: 25px;
+        border-radius: .5em;
+        box-shadow: 1px 1px 3px #000 ;
+    }
+}
+/* sm */
+/* @media (min-width: 640px) {} */
+
+/* md */
+/*@media (min-width: 768px) {}*/
+
+/* lg */
+/* @media (min-width: 1024px) {} */
+
+/* xl */
+/* @media (min-width: 1280px) {} */

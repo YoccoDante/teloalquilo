@@ -1,0 +1,45 @@
+.Comment {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    height: fit-content;
+    position: relative;
+    background-color: #c9c9c9;
+    border-radius: 0 1.5em 1.5em 1.5em;
+    color: black;
+}
+.OwnerData {
+    position: relative;
+    text-transform: capitalize;
+    font-weight: bold;
+    text-align: left;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.Content {
+    position: relative;
+    top: -15px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 16px;
+}
+.OwnerPic {
+    margin-right: 5px;
+}
+.OwnerName{
+    font-size: 14px;
+}
+.Date {
+    margin-left: 10px;
+    font-size: 10px;
+    margin-right: 15px;
+}
+.CommentBoxT {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    width: 100%;
+    padding-left: 10px;
+}
