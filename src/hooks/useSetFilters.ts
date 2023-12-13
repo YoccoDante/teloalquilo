@@ -1,9 +1,9 @@
 import { FiltersType } from "./useFilterProducts"
-import { ProductCategory } from "../models/product/productModel"
+import { PRODUCT_CATEGORIES } from "../models/product/productModel"
 import { useState } from "react"
 
 function useSetFilters( {changeFilters}:{changeFilters:React.Dispatch<React.SetStateAction<FiltersType>>} ) {
-    const [categoryFilter, setCategoryFilter] = useState<ProductCategory|string>("all")
+    const [categoryFilter, setCategoryFilter] = useState<PRODUCT_CATEGORIES|string>("all")
     const [regionFilter, setRegionFilter] = useState("all")
     const [priceFilter, setPriceFilter] = useState(1000000)
     const setPrice = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,12 +22,19 @@ function useSetFilters( {changeFilters}:{changeFilters:React.Dispatch<React.SetS
     }
     const setFilters = () =>{
         changeFilters({
-            category:categoryFilter,
+            category:categoryFilter.toLocaleLowerCase(),
             maxPrice:priceFilter,
             region:regionFilter
         })
     }
-    return {setPrice, setCategory, setRegion, setFilters}
+    const resetFilters = () =>{
+        changeFilters({
+            category:'all',
+            maxPrice:1000000,
+            region:'all'
+        })
+    }
+    return {setPrice, setCategory, setRegion, setFilters, resetFilters}
 }
 
 export default useSetFilters

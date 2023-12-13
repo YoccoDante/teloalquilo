@@ -1,26 +1,24 @@
 import "./index.css"
 import { useNavigate } from "react-router-dom"
 import Rating from "@mui/material/Rating"
-import RoundedPic from "../RoundedPic"
+import CardPic from "../RoundedPic/CardPic"
+import { UserModel } from "../../models/user/userModel"
 
 export interface ProfileCardProps {
-  _id:string,
-  full_name:string,
-  profile_pic:string,
-  rate:number
+  user:UserModel
 }
 
-function ProfileCard( {_id, full_name, profile_pic, rate}:ProfileCardProps ) {
+function ProfileCard( {user}:ProfileCardProps ) {
   const navigate = useNavigate()
   const handleClick = () => {
-      navigate("/finder/"+_id)
+      navigate("/finder/"+user._id)
   }
   return (
     <div className="ProfileCard" onClick={handleClick}>
       <p className="Anfitrion">Anfitrion:</p>
-      <p className="ProfileCardFullName">{full_name}</p>
-      <Rating className="ProfileCardRate" readOnly defaultValue={rate}/>
-      <RoundedPic pic={profile_pic}/>
+      <p className="ProfileCardFullName">{user.name + ' ' + user.last_name}</p>
+      <Rating className="ProfileCardRate" readOnly defaultValue={user.stars}/>
+      <CardPic pic={user.profile_pic}/>
     </div>
   )
 }

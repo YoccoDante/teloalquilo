@@ -1,13 +1,17 @@
-import { BlockLike } from "typescript"
 import { ProductModel } from "../models/product/productModel"
-import React, { useState, useEffect } from "react"
+import { useState, useEffect } from "react"
+import { BACKEND_TOOLS } from "../models/BACKEND_TOOLS"
 
-const API = "http://127.0.0.1:5000/product"
 
-function useGetProducts() {
+function useGetProducts(page:number, page_size:number) {
     const [ products, setProducts ] = useState<ProductModel[]>([])
+    const API = BACKEND_TOOLS.API_URI+'/product?page='+page+'&page_size='+page_size
     useEffect(()=>{
-        fetch(API)
+        fetch(API,{
+            headers:{
+                'Enterprise-Id':BACKEND_TOOLS.ENTERPRISE_ID
+            }
+        })
         .then(res => res.json())
         .then(data => setProducts(data.products))
     },[])

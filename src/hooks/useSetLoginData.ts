@@ -1,15 +1,22 @@
 import { useState } from "react";
 import useAuth from "./useAuth";
+import { WithResponseModel } from "../models/withResponse";
 
+interface SetLoginDataProps {
+  setIsLoading:React.Dispatch<React.SetStateAction<boolean>>,
+  setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel | null>>,
+}
 
-function useSetLoginData() {
+function useSetLoginData({setIsLoading, setWithResponse}:SetLoginDataProps) {
     const [email, setEmail] = useState("");
-    const [ isLoading, setIsLoading ] = useState(false)
     const [password, setPassword] = useState("");
-    const Auth = useAuth({setIsLoading})
-    const Submit = (e: React.FormEvent<HTMLFormElement>) => {
+    const Auth = useAuth()
+    const Submit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        Auth.Login({email, password})
+        setIsLoading(true)
+        const loginData = {email, password}
+        await Auth.Login({loginData, setWithResponse})
+        setIsLoading(false)
       };
     
     const ChangeEmail = (e:React.ChangeEvent<HTMLInputElement>) => {
@@ -19,7 +26,7 @@ function useSetLoginData() {
       setPassword(e.target.value)
     }
 
-  return { ChangeEmail, ChangePassword, Submit, isLoading }
+  return { ChangeEmail, ChangePassword, Submit}
 }
 
 export default useSetLoginData

@@ -4,6 +4,6 @@ import { ProductModel } from "../product/productModel"
 
 export type ProductRootModel = {
     comments:CommentModel[],
-    customer:UserModel,
+    user:UserModel,
     product:ProductModel
   }

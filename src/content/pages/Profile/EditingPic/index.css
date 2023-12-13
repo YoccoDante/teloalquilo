@@ -1,0 +1,16 @@
+.RoundedPicContainer {
+    position: relative;
+    min-width: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 100%;
+    margin: 5px;
+    cursor: pointer;
+}
+.RoundedPicPic {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}

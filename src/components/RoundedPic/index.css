@@ -1,7 +1,5 @@
-.RoundedPicContainer {
+.ProfilePicContainer {
     position: relative;
-    height: 50px;
-    width: 50px;
     min-width: 50px;
     display: flex;
     justify-content: center;
@@ -9,9 +7,21 @@
     overflow: hidden;
     border-radius: 100%;
     margin: 5px;
+    cursor: pointer;
+    object-fit: cover;
 }
-.RoundedPicPic {
+.ProfilePicContainer > img {
     height: 100%;
     width: 100%;
-    object-fit: cover;
+}
+.CardPicContainer {
+    border-radius: 50%;
+    overflow: hidden; /* Esto asegura que la imagen no sobresalga del borde redondeado del contenedor */
+}
+
+.CardPicContainer > img {
+    display: block; /* Esto elimina cualquier espacio extra alrededor de la imagen */
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Esto asegura que la imagen cubra todo el contenedor, recortándola si es necesario */
 }

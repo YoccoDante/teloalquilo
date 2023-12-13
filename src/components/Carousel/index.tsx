@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import "./index.css"
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -28,13 +28,17 @@ function Carousel( {imgs}:CarouselProps ) {
     }
     const handleDotClick = (index:number) => {
         setCurrentIndex(index)
-        console.log(index)
     }
+
+    useEffect(() => {
+        imgs.forEach(img => {
+          const image = new Image();
+          image.src = img;
+        });
+      }, [imgs]);
   return (
     <div className="CarouselContainer">
-      <div className="ImageContainer">
-        <img className="Image" src={imgs[currentIndex]}/>
-      </div>
+      <img className="Image" src={imgs[currentIndex]}/>
       <div className="Button Left" onClick={handlePrev}><NavigateBeforeIcon sx={{ fontSize:46, color:"#fff" }}/></div>
       <div className="Button Right"onClick={handleNext}><NavigateNextIcon sx={{ fontSize:46, color:"#fff" }}/></div>
         <ul className="Dots">

@@ -1,6 +1,6 @@
 import { CommentModel } from "../../models/comment/commentModel"
 import "./index.css"
-import RoundedPic from "../RoundedPic"
+import RoundedPic from "../RoundedPic/ProfilePic"
 
 interface CommentProps {
     comment:CommentModel

@@ -1,16 +1,45 @@
-import './index.css'
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
+import React, { useContext, useState, useEffect, useRef } from 'react';
+import { Box, AppBar, Toolbar, IconButton, Hidden, Drawer, Divider, List, ListItem } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Link } from 'react-router-dom';
-import { Hidden } from '@mui/material';
-import { Outlet } from 'react-router-dom';
+import ArrowBack from '@mui/icons-material/ArrowBack';
+import { Link, useNavigate, Outlet } from 'react-router-dom';
+import { UserSessionContext } from '../../contexts/authContext';
+import RoundedPic from '../../components/RoundedPic/ProfilePic';
+import useAuth from '../../hooks/useAuth';
+import './index.css';
+import { useNavBarHeight } from '../../contexts/navBarContext';
 
-export default function NavBar() {
+function NavBar() {
+  const navigate = useNavigate();
+  const { setNavBarHeight } = useNavBarHeight();
+  const { userSession } = useContext(UserSessionContext);
+  const [ isOpen, setIsOpen ] = useState(false);
+  const navBarRef = useRef<HTMLDivElement>(null);
+  const [ localHeight, setLocalHeight ] = useState(0)
+  const { LogOut } = useAuth();
+
+  useEffect(() => {
+    if (navBarRef.current) {
+      setNavBarHeight(navBarRef.current.offsetHeight);
+      setLocalHeight(navBarRef.current.offsetHeight)
+    }
+  }, []);
+
+  const navBarLinks = [
+    {to:'/finder', label:'Usuarios'},
+    {to:'/about', label:'Acerca de nosotros'},
+    {to:'/products/listby/all', label:'Nuestros productos'},
+    {to:'/quickquestions', label:'Preguntas Frecuentes'}
+  ];
+
+  const handleClick = (to:string) => {
+    navigate(to);
+    setIsOpen(false);
+  };
+
   return (
     <>
-    <AppBar sx={{bgcolor:"#111"}} position="static">
+      <AppBar ref={navBarRef} sx={{bgcolor:"#111", zIndex:2}} position="fixed">
         <Toolbar sx={{maxWidth:"100vw"}}>
           <IconButton
             size="large"
@@ -18,21 +47,158 @@ export default function NavBar() {
             color="inherit"
             aria-label="menu"
             sx={{ mr: 2, display:{md:"none"}}}
+            onClick={() => setIsOpen(true)}
           >
             <MenuIcon/>
           </IconButton>
-            <Link to="/" className='link logo'>NombreDeMarca</Link>
+            <Link to="/" className='link logo'>Teloalquilo</Link>
           <Hidden mdDown>
-            <Link to="/finder" className='link'>Usuarios</Link>
-            <Link to="/about" className='link'>Acerca de nosotros?</Link>
-            <Link to="/products" className='link'>Nuestros productos</Link>
-            <Link to="/quickquestions" className='link'>Preguntas Frecuentes</Link>
-            <Link to="/login" className='link'>Iniciar Sesión</Link>
-            <Link to="/register" className='link'>Registrarse</Link>
+            {navBarLinks.map((link) => 
+              <Link to={link.to} className='link' key={link.label}>{link.label}</Link>
+            )}
+            {userSession.user ? 
+              <RoundedPic pic={userSession.user.profile_pic} to={'/profile'}/>
+            :
+            <>
+              <Link to="/login" className='link'>Iniciar Sesión</Link>
+              <Link to="/register" className='link'>Registrarse</Link>
+            </>
+            }
           </Hidden>
+          <Drawer
+            open={isOpen}
+            onClose={() => setIsOpen(false)}
+          >
+            <Box display='flex' justifyContent='center'>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                sx={{display:{md:"none"}, width:'fit-content'}}
+                onClick={() => setIsOpen(false)}
+              >
+                <ArrowBack/>
+              </IconButton>
+              {userSession.user && <RoundedPic pic={userSession.user.profile_pic} to={"/profile"}/>}
+            </Box>
+            <Divider/>
+            <List sx={{width:'200px'}}>
+              <ListItem onClick={() => handleClick("/")}>Home</ListItem>
+              {navBarLinks.map((link) => 
+                <ListItem onClick={() => handleClick(link.to)} key={link.label}>{link.label}</ListItem>
+              )}
+              {userSession.user ?
+                <ListItem onClick={() => { LogOut(); setIsOpen(false); }}>Cerrar sesión</ListItem>
+                :
+                <><ListItem onClick={() => handleClick("/login")}>Iniciar sesión</ListItem>
+                <ListItem onClick={() => handleClick("/register")}>Registrarse</ListItem></>
+              }
+            </List>
+          </Drawer>
         </Toolbar>
       </AppBar>
-    <Outlet/>
+      <Box sx={(theme) => ({ mt: theme.spacing(localHeight / 8) })}>
+        <Outlet/>
+      </Box>
     </>
   );
 }
+
+export default NavBar;
+
+// import { Box } from '@mui/material';
+// import './index.css'
+// import AppBar from '@mui/material/AppBar';
+// import Toolbar from '@mui/material/Toolbar';
+// import IconButton from '@mui/material/IconButton';
+// import MenuIcon from '@mui/icons-material/Menu';
+// import ArrowBack from '@mui/icons-material/ArrowBack';
+// import { Link, useNavigate } from 'react-router-dom';
+// import { Hidden, Drawer, Divider, List, ListItem } from '@mui/material';
+// import { Outlet } from 'react-router-dom';
+// import { useContext, useState } from 'react';
+// import { UserSessionContext } from '../../contexts/authContext';
+// import RoundedPic from '../../components/RoundedPic';
+// import useAuth from '../../hooks/useAuth';
+
+// export default function NavBar() {
+//   const [ isOpen, setIsOpen ] = useState(false)
+//   const {isLogged, userSession} = useContext(UserSessionContext)
+//   const navigate = useNavigate()
+//   const {LogOut} = useAuth()
+//   const navBarLinks = [
+//     {to:'/finder', label:'Usuarios'},
+//     {to:'/about', label:'Acerca de nosotros'},
+//     {to:'/products/listby/all', label:'Nuestros productos'},
+//     {to:'/quickquestions', label:'Preguntas Frecuentes'}
+// ]
+//   const handleClick = (to:string) => {
+//     navigate(to)
+//     setIsOpen(false)
+//   }
+//   return (
+//     <>
+//     <AppBar sx={{bgcolor:"#111", zIndex:2}} position="fixed">
+//         <Toolbar sx={{maxWidth:"100vw"}}>
+//           <IconButton
+//             size="large"
+//             edge="start"
+//             color="inherit"
+//             aria-label="menu"
+//             sx={{ mr: 2, display:{md:"none"}}}
+//             onClick={() => setIsOpen(true)}
+//           >
+//             <MenuIcon/>
+//           </IconButton>
+//             <Link to="/" className='link logo'>Teloalquilo</Link>
+//           <Hidden mdDown>
+//             {navBarLinks.map((link) => 
+//               <Link to={link.to} className='link' key={link.label}>{link.label}</Link>
+//             )}
+//             {isLogged? 
+//               <RoundedPic pic={userSession.user?.profile_pic} to={'/profile'}/>
+//             :
+//             <>
+//               <Link to="/login" className='link'>Iniciar Sesión</Link>
+//               <Link to="/register" className='link'>Registrarse</Link>
+//             </>
+//             }
+//           </Hidden>
+//           <Drawer
+//           open={isOpen}>
+//             <Box display='flex' justifyContent='center'>
+//             <IconButton
+//               size="large"
+//               edge="start"
+//               color="inherit"
+//               aria-label="menu"
+//               sx={{display:{md:"none"}, width:'fit-content'}}
+//               onClick={() => setIsOpen(false)}
+//             >
+//               <ArrowBack/>
+//             </IconButton>
+//             <div>{isLogged && <RoundedPic pic={userSession.user?.profile_pic} to={"/profile"}/>}</div>
+//             </Box>
+//             <Divider/>
+//             <List sx={{width:'200px'}}>
+//             <ListItem onClick={() => handleClick("/")}>Home</ListItem>
+//               {navBarLinks.map((link) => 
+//                 <ListItem onClick={() => handleClick(link.to)} key={link.label}>{link.label}</ListItem>
+//               )}
+//               {isLogged?
+//                 <ListItem onClick={() => LogOut()}>Cerrar sesión</ListItem>
+//                 :
+//                 <><ListItem onClick={() => handleClick("/login")}>Iniciar sesión</ListItem>
+//                 <ListItem onClick={() => handleClick("/register")}>Registrarse</ListItem></>
+//               }
+//             </List>
+//           </Drawer>
+//         </Toolbar>
+//       </AppBar>
+//       <Box sx={{mt:'60px'}}>
+//         <Outlet/>
+//       </Box>
+//     </>
+//   );
+// }

@@ -19,7 +19,7 @@ export default function ProductCard( props:ProductProps ) {
         <p>S/.{product.price}</p>
       </div>
       <div className='ProductCardImage'>
-        <img src={product.imgs[0]}/>
+        <img src={product.imgs[0]} loading='lazy' />
         <div>
           <Rating className='ProductCardRating'readOnly defaultValue={product.stars}/>
           <button>Más detalles</button>

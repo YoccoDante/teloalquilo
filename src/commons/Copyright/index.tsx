@@ -6,8 +6,8 @@ export function CopyRight() {
   return (
     <>
       {'© '}
-      <Link color="inherit" to="https://mui.com/">
-        Your Website
+      <Link color="inherit" to="/home">
+        Teloalquilo.com.pe
       </Link>{' '}
       {new Date().getFullYear()}
     </>

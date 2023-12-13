@@ -1,11 +1,18 @@
 import { useNavigate } from "react-router-dom"
 import { UserSessionContext, UserType } from "../contexts/authContext"
-import { useContext, useEffect, useState } from "react"
-import { UserModel } from "../models/user/userModel"
-import { join } from "path"
-import { Api } from "../assets/keys"
+import { useContext, useState } from "react"
+import { WithResponseModel } from "../models/withResponse"
+import { BACKEND_TOOLS } from "../models/BACKEND_TOOLS"
 
-const API = "http://localhost:5000"
+interface RegisterProps {
+    userData:RegisterData,
+    setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel | null>>,
+}
+
+interface LoginProps {
+    loginData:LoginData,
+    setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel | null>>,
+}
 
 type LoginData = {
     email:string,
@@ -19,55 +26,64 @@ type RegisterData = {
     range?:string
 }
 
-function useAuth({setIsLoading}:{setIsLoading:React.Dispatch<React.SetStateAction<boolean>>}) {
+function useAuth() {
     const navigate = useNavigate()
     const {setIsLogged, setUserSession} = useContext(UserSessionContext)
-    async function Login (loginData:LoginData) {
-        setIsLoading(true)
-        const res = await fetch(API+'/'+'/auth/user', {
-            method:"POST",
-            headers:{
-            "Content-Type":"application/json"
-            },
-            body:JSON.stringify(loginData)
-        })
-        const data = await res.json()
-        if (data?.error){
-            alert("Worng Email or Password")
-            setIsLoading(false)
+    async function Login ({loginData, setWithResponse}:LoginProps) {
+        const API = BACKEND_TOOLS.API_URI+'/auth/user'
+        try {
+            const res = await fetch(API, {
+                method:"POST",
+                headers:{
+                "Content-Type":"application/json",
+                'Enterprise-Id':BACKEND_TOOLS.ENTERPRISE_ID
+                },
+                body:JSON.stringify(loginData)
+            })
+            const data = await res.json()
+            if(res.ok){
+                setUserSession(data)
+                setIsLogged(true)
+                navigate("/home")
+            }
+            if (!res.ok){
+                setWithResponse({msg:JSON.stringify(data), color:'error'})
+            }
         }
-        if(data.user){
-            setUserSession(data)
-            setIsLogged(true)
-            console.log("in hook", data.user)
-            navigate("/home")
-            setIsLoading(false)
+        catch (err) {
+            setWithResponse({msg:String(err), color:'error'})
         }
     }
     function LogOut () {
-        setIsLoading(true)
+        navigate('/login')
         setIsLogged(false)
         setUserSession({user:null, token:null})
-        setIsLoading(false)
     }
 
-    async function Register ({userData}:{userData:RegisterData}) {
-        setIsLoading(true)
-        // const res = await fetch([API,'user','new'].join('/'),{
-        //     headers:{
-        //         "Content-Type":"application/json"
-        //     },
-        //     body:JSON.stringify(userData)
-        // })
-        // const data = await res.json()
-        // if (data.error){
-        //     alert("error a registar")
-        // }
-        // if (data.user){
-        //     alert('user registered')
-        // }
-        alert("user registered")
-        setIsLoading(false)
+    async function Register ({userData, setWithResponse}:RegisterProps) {
+        const API = BACKEND_TOOLS.API_URI+'/user/new'
+        try {
+            const res = await fetch(API, {
+              method:'POST',
+              headers:{
+                'Content-Type':'application/json',
+                'Enterprise-Id':BACKEND_TOOLS.ENTERPRISE_ID
+              },
+              body:JSON.stringify(userData)
+            })
+            const data = await res.json()
+            if (res.ok){
+              setUserSession(data)
+              setIsLogged(true)
+              navigate('/home')
+            }
+            if (!res.ok){
+              setWithResponse({msg:'algo salió mal, inténtalo después. '+data.error, color:'error'})
+            }
+        }
+        catch (err) {
+        setWithResponse({msg:String(err), color:'error'})
+        }
     }
 
     return {Login, LogOut, Register}

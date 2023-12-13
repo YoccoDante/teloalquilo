@@ -1,0 +1,6 @@
+.DescriptionTextArea {
+    min-height: 100px;
+    width: 100%;
+    border-color: red;
+    resize: vertical;
+}

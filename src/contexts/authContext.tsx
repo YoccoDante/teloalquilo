@@ -12,6 +12,7 @@ export interface UserContextInterface {
     setIsLogged:React.Dispatch<React.SetStateAction<boolean>>
     userSession:UserType
     setUserSession:React.Dispatch<React.SetStateAction<UserType>>
+    changeProfilePic:any
 }
 const defaultUserContext = {
     isLogged:false,
@@ -20,7 +21,8 @@ const defaultUserContext = {
         user:null,
         token:null
     },
-    setUserSession: (user:UserType) => {}
+    setUserSession: (user:UserType) => {},
+    changeProfilePic:(value:string) => {}
 } as UserContextInterface
 
 //create context
@@ -32,11 +34,13 @@ export function UserContextProvider ({children}:{children:ReactNode}) {
         {user:null,token:null}
     )
     const [ isLogged, setIsLogged ] = useState(false)
-    useEffect(() => {
-        console.log("userSession:",userSession)
-    },[userSession])
+    const changeProfilePic = (url:string) => {
+        if ( userSession.user?.profile_pic){
+            userSession.user.profile_pic = url
+        }
+    }
     return (
-    <UserSessionContext.Provider value={{userSession, setUserSession, isLogged, setIsLogged}}>
+    <UserSessionContext.Provider value={{userSession, setUserSession, isLogged, setIsLogged, changeProfilePic}}>
         {children}
     </UserSessionContext.Provider>
     )
