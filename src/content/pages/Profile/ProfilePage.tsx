@@ -50,7 +50,6 @@ function ProfilePage() {
       flexDirection:{xs:'column', md:'row'},
       position:'relative'
       }}>
-      {/*------Profile Pic------*/}
       <Box
       component='div'
       sx={{
@@ -75,7 +74,6 @@ function ProfilePage() {
             <EditIcon/>
           </IconButton> }         
       </Box>
-      {/*------Info------*/}
       <Box
       component='dl'
       ml={{md:4}}
@@ -104,7 +102,6 @@ function ProfilePage() {
           </div>
         )}
       </Box>
-      {/*------Cancel and Save buttons------*/}
       <Box sx={{
         position:'fixed',
         bottom:{md:'5%'},
@@ -122,7 +119,6 @@ function ProfilePage() {
         </Button>
       </Box>
       <ProfileOperations/>
-      {/*------------------------------------*/}
       {editData &&
       <SetMinDataForm
         setWithResponse={setWithResponse}

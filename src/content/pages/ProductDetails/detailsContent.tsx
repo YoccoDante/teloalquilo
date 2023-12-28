@@ -88,7 +88,6 @@ function DetailsContent( {root}:DetailsContentProps ) {
         maxHeight:{md:'100vh'},
         position:'relative',
       }}>
-      {/*left side images*/}
       <Box sx={{
         width:{xs:'100vw', md:'70vw'},
         height:{xs:'300px', md:'100vh'},
@@ -98,7 +97,6 @@ function DetailsContent( {root}:DetailsContentProps ) {
         <Carousel imgs={root.product.imgs}/>
         <CloseIcon/>
       </Box>
-      {/*right side details*/}
       <Box
         sx={{mx:4}}
         width={{md:'40%'}}
@@ -136,7 +134,6 @@ function DetailsContent( {root}:DetailsContentProps ) {
           <Typography sx={{ml:4}}>S/.{root.product.price}</Typography>
           <ProfileCard user={root.user}/>
         </Box>
-        {/*commentary box*/}
         <Box sx={{height:'45%', display: 'flex', flexDirection: 'column'}}>
           <CommentBox comments={comments}/>
         </Box>

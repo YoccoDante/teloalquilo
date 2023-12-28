@@ -76,7 +76,6 @@
   }
   
   .super-box:hover .box {
-  /*   border: 1px solid rgba(225, 227, 232, 0.18); */
     -webkit-box-shadow: 0 3px 4px 0 rgba(44, 71, 146, 0.25);
             box-shadow: 0 3px 4px 0 rgba(44, 71, 146, 0.25);
     -webkit-transition-delay: 0.32s;

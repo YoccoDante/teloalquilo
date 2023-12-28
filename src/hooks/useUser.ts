@@ -29,17 +29,28 @@ function useUser({setIsLoading}:UseUserProps) {
     const { userSession } = useContext(UserSessionContext)
     const navigate = useNavigate()
     
-    async function GetUsers( {range, page, page_size}:GetUserProps) {
-        const API = BACKEND_TOOLS.API_URI+"/user/result?range="+range+'&page='+page+'&page_size='+page_size
-        const res = await fetch(API,{
-            headers:{
-                'Enterprise-Id':BACKEND_TOOLS.ENTERPRISE_ID
-            }
-        })
-        const data = await res.json()
-        const users:UserModel[] = data.users
-    return users
-    }
+    async function GetUsers({ range, page, page_size }: GetUserProps) {
+        const API = `${BACKEND_TOOLS.API_URI}/user/result?range=${range}&page=${page}&page_size=${page_size}`;
+      
+        try {
+          const res = await fetch(API, {
+            headers: {
+              'Enterprise-Id': BACKEND_TOOLS.ENTERPRISE_ID,
+            },
+          });
+      
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+      
+          const data = await res.json();
+          const users: UserModel[] = data.users;
+          return users;
+        } catch (error) {
+          console.error('Error fetching users:', error);
+          return [];
+        }
+      }
     async function EditUser( EditData:EditUserProps, setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel | null>>) {
         setIsLoading(true)
         const API = BACKEND_TOOLS.API_URI+'/user/'

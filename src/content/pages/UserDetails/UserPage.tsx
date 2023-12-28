@@ -29,7 +29,6 @@ function UserPage({root}:UserPageProps) {
         overflow: {xs:'auto', md:'hidden'},
       }}
     >
-      {/* Left side info and profile pic */}
       <Box sx={{ display: 'flex', flexDirection: 'column', width:{xs:'100vs', md:'50%'}, overflow: 'auto' }}>
         <CustomerImage user={root.user} />
         <CustomerInfo user={root.user} />
@@ -45,7 +44,6 @@ function UserPage({root}:UserPageProps) {
         </Button>
         }
       </Box>
-      {/* Right side comments */}
       <Box sx={{ display: 'flex', flexDirection: 'column', width:{xs:'100vw', md:'50%'}, height: '100%', p:1, boxSizing:'border-box', maxHeight:{xs:'50vh', md:'100vh'} }}>
         <p style={{fontSize:'26px'}}>Comentarios del perfíl:</p>
         <CommentBox comments={root.comments}/>

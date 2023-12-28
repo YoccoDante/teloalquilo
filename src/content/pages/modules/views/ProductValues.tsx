@@ -33,12 +33,6 @@ function ProductValues() {
           <Grid item xs={12} md={4}>
             <Box sx={item}>
               <SignpostIcon sx={{fontSize:'36px'}}/>
-              {/* <Box
-                component="img"
-                src="/static/themes/onepirate/productValues1.svg"
-                alt="suitcase"
-                sx={{ height: 55 }}
-              /> */}
               <Typography variant="h6" sx={{ my: 5 }}>
                 facíl de usar
               </Typography>
@@ -52,12 +46,6 @@ function ProductValues() {
           <Grid item xs={12} md={4}>
             <Box sx={item}>
               <PublicIcon sx={{fontSize:'36px'}}/>
-              {/* <Box
-                component="img"
-                src="/static/themes/onepirate/productValues2.svg"
-                alt="graph"
-                sx={{ height: 55 }}
-              /> */}
               <Typography variant="h6" sx={{ my: 5 }}>
                 disponible en tu zona
               </Typography>

@@ -162,7 +162,7 @@ function ProfileProducts( {products, editing, setSeeResetFilters, setProducts}:P
     {products.length === 0 && 
       <LampLoader/>
     }
-    {managingProduct && selectedProduct && /* TODO implement a edit product window */
+    {managingProduct && selectedProduct &&
       <OverScreen onClick={() => {setSelectedProduct(null)}}>
         <Box sx={{bgcolor:'#fff', p:8, maxHeight:'80vh', overflowY:'scroll', position:'relative', maxWidth:'50vw'}}>
           <Box sx={{fontSize:'35px', position:'absolute', top:8, left:8}}>Editar Producto:</Box>
