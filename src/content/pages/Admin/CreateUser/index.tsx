@@ -1,15 +1,14 @@
-import {FormControlLabel, Box,Avatar,Typography, TextField, Button, Grid, Checkbox } from "@mui/material";
+import {FormControlLabel, Box,Avatar,Typography, TextField, Button, Checkbox } from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { CopyRight } from "../../../../commons/Copyright";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useRef } from "react";
 import GenderMenu from "../../../../commons/GenderMenu";
 import { WithResponseModel } from "../../../../models/withResponse";
 import ResponseSnackBar from "../../../../commons/ResponseSnackBar";
 import useAuth from "../../../../hooks/useAuth";
 
-export const SignUpComponent= () =>{
+function CreateUser () {
     const Auth = useAuth()
+    const formRef = useRef<HTMLFormElement>(null);
     const [name, setName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
@@ -20,20 +19,30 @@ export const SignUpComponent= () =>{
     const [withResponse, setWithResponse] = useState<WithResponseModel|null>(null);
     const [asHost, setAsHost] = useState(false);
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-      setIsLoading(true)
-      e.preventDefault();
-      const userData = {
-        "name":name.toLocaleLowerCase(),
-        "last_name":lastName.toLocaleLowerCase(),
-        "email":email.toLocaleLowerCase(),
-        "password":password,
-        "gender":gender.toLocaleLowerCase(),
-        "phone_number":phone_number,
-        "range":asHost? 'host' : 'user'
-      }
-      Auth.Register({userData, setWithResponse})
-      setIsLoading(false)
-    };
+        setIsLoading(true)
+        e.preventDefault();
+        const userData = {
+          "name":name.toLocaleLowerCase(),
+          "last_name":lastName.toLocaleLowerCase(),
+          "email":email.toLocaleLowerCase(),
+          "password":password,
+          "gender":gender.toLocaleLowerCase(),
+          "phone_number":phone_number,
+          "range":asHost? 'host' : 'user'
+        }
+        await Auth.Register({userData, setWithResponse})
+        setIsLoading(false)
+        setName('')
+        setLastName("")
+        setEmail("")
+        setPassword("")
+        setPhone_Number("")
+        setGender("Seleccionar")
+        setAsHost(false)
+        if (formRef.current) {
+            formRef.current.reset();
+        }
+      };
     return (
       <Box
         sx={{
@@ -55,9 +64,9 @@ export const SignUpComponent= () =>{
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Registrarse
+          Registrar nuevo usuario
         </Typography>
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1, position: 'relative'}}>
+        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1, position: 'relative'}} ref={formRef}>
           <TextField
             disabled={isLoading}
             margin="normal"
@@ -129,16 +138,8 @@ export const SignUpComponent= () =>{
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Registrarse
+            Registrar
           </Button>
-          <Grid container sx={{display:'flex', justifyContent:'center'}}>
-            <Grid item>
-              <Link to="/login">
-                {"¿Ya tienes cuenta? Inicia Sesión"}
-              </Link>
-            </Grid>
-          </Grid>
-          <CopyRight/>
         </Box>
         {withResponse &&
           <ResponseSnackBar withResponse={withResponse} setWithResponse={setWithResponse}/>
@@ -146,3 +147,5 @@ export const SignUpComponent= () =>{
       </Box>
     )
 }
+
+export default CreateUser

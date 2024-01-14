@@ -18,7 +18,7 @@ export const SetMinDataForm= ({user, setEditData, setEditing, setWithResponse}:S
     const SetData = useSetUserData()
     const genders = ["male","femail", 'other']
     const [ isLoading, setIsLoading ] = useState(false)
-    const { EditUser } = useUser({setIsLoading})
+    const { EditUser } = useUser()
     const { userSession } = useContext(UserSessionContext)
     const minData = [
       {title:'Nuevo nombre:', content:user?.name, action:SetData.ChangeName},
@@ -32,7 +32,7 @@ export const SetMinDataForm= ({user, setEditData, setEditing, setWithResponse}:S
     const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
       e.preventDefault()
       const editedUser = SetData.getUserDataToEdit()
-      await EditUser({token: userSession.token, atributes:editedUser}, setWithResponse)
+      await EditUser({EditData:{token: userSession.token, atributes:editedUser}, setWithResponse:setWithResponse, setIsLoading:setIsLoading})
       setEditData(false)
       setEditing(false)
     }

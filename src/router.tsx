@@ -13,20 +13,17 @@ const Loader = (Component:any) => (props:any) =>
     </Suspense>
   );
 
-// Pages
-//CommonContent
+const Admin = Loader(
+  lazy(() => import('./content/pages/Admin'))
+)
 const NotFound = Loader(
   lazy(() => import('./commons/404'))
 )
-//UserContent
 const SignIn = Loader(
     lazy(() => import("./content/pages/Auth/SignIn"))
 )
 const SignUp = Loader(
   lazy(() => import("./content/pages/Auth/SignUp"))
-)
-const SideBar = Loader(
-  lazy(() => import('./layouts/SideBar'))
 )
 const About = Loader(
   lazy(() => import("./content/pages/About"))
@@ -84,12 +81,6 @@ const routes:RouteObject[] = [
             element:<RequiredLogin>
                       <ProfilePage/>
                     </RequiredLogin>
-          },
-          {
-            path:'admin',
-            element:<RequiredLogin>
-                      <></>
-                    </RequiredLogin>
           }
         ]
     },
@@ -130,6 +121,12 @@ const routes:RouteObject[] = [
           element:<HostDetails/>
         }
       ]
+    },
+    {
+      path:'admin',
+      element:<RequiredLogin>
+                <Admin/>
+              </RequiredLogin>
     },
     {
       path:"*",

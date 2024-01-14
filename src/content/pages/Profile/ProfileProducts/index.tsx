@@ -18,7 +18,7 @@ import { WithResponseModel } from '../../../../models/withResponse';
 import { UserSessionContext } from '../../../../contexts/authContext';
 import OverScreen from '../../../../commons/OverScreen';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
-import { BACKEND_TOOLS } from '../../../../models/BACKEND_TOOLS';
+import useProducts from '../../../../hooks/useGetProducts';
 
 interface ProfileProductsProps {
   products:ProductModel[],
@@ -27,8 +27,6 @@ interface ProfileProductsProps {
   setProducts: React.Dispatch<React.SetStateAction<ProductModel[]>>
 }
 
-const API = BACKEND_TOOLS.API_URI+'/product/'
-
 function ProfileProducts( {products, editing, setSeeResetFilters, setProducts}:ProfileProductsProps){
   const {userSession} = useContext(UserSessionContext)
   const [ isLoading, setIsLoading ] = useState(false)
@@ -36,6 +34,7 @@ function ProfileProducts( {products, editing, setSeeResetFilters, setProducts}:P
   const [ managingProduct, setManagingProduct ] = useState(false)
   const [ deletingProduct, setDeletingProduct ] = useState(false)
   const [ selectedProduct, setSelectedProduct ] = useState<ProductModel|null>(null)
+  const Products = useProducts()
 
   const handleDeleteAttemp = (product:ProductModel) => {
     setManagingProduct(false)
@@ -49,77 +48,36 @@ function ProfileProducts( {products, editing, setSeeResetFilters, setProducts}:P
   }
   const handleDeleteProduct = async () => {
     setIsLoading(true)
-    const token = userSession.token? userSession.token : ''
-    const product_id = selectedProduct?._id? selectedProduct._id : ''
-    const deleteData = {token:token, product_id:product_id}
-    try {
-      const res = await fetch(API,{
-        headers:{
-          'Content-Type':'application/json',
-          'Enterprise-Id':BACKEND_TOOLS.ENTERPRISE_ID,
-          'Authorization':userSession.token!
-        },
-        method:'DELETE',
-        body:JSON.stringify(deleteData)
-      })
-      const data = await res.json()
-      if (res.ok) {
-        setWithResponse({msg:'¡Eliminado correctamente!', color:'success'})
-        const newProducts = products.filter((product) => product._id !== selectedProduct?._id)
-        setProducts(newProducts)
-      }
-      if (!res.ok) {
-        setWithResponse({msg:JSON.stringify(data), color:'error'})
-      }
-    }catch (error) {
-      setWithResponse({msg:'Ha ocurrido un error, intentalo más tarde!', color:'error'})
-    }
-    finally {
-      setSelectedProduct(null)
-      setDeletingProduct(false)
-      setIsLoading(false)
-    }
+    Products.deleteProduct({
+      token:userSession.token!,
+      selectedProduct:selectedProduct,
+      setWithResponse:setWithResponse,
+      setProducts:setProducts,
+      products:products,
+      setSelectedProduct:setSelectedProduct
+    })
+    setDeletingProduct(false)
+    setIsLoading(false)
   }
   const handleClose = () => {
     setSelectedProduct(null)
     setDeletingProduct(false)
   }
-  const handleChangeAvailability = async () => {
-    setIsLoading(true)
-    const product_id = selectedProduct? selectedProduct._id : ''
-    const able = !selectedProduct?.able
 
-    const formData = new FormData();
-    formData.append('product_id', product_id)
-    formData.append('atributes', JSON.stringify({able:able}))
-    
-    try {
-      const res = await fetch(API,{
-        headers:{
-          'Enterprise-Id':BACKEND_TOOLS.ENTERPRISE_ID,
-          'Authorization':userSession.token!
-        },
-        method:'PUT',
-        body: formData
-      })
-      const data = await res.json()
-      if (res.ok) {
-        setWithResponse({msg:!able?'Producto suspendido correctamente!':'Producto recuperado correctamente', color:'success'})
-        selectedProduct!.able = !selectedProduct?.able
-      }
-      if (!res.ok) {
-        setWithResponse({msg:JSON.stringify(data), color:'error'})
-      }
-    }catch (error) {
-      setWithResponse({msg:'Ha ocurrido un error, intentalo más tarde!', color:'error'})
-    }
-    finally {
-      setSelectedProduct(null)
-      setDeletingProduct(false)
-      setIsLoading(false)
-    }
+  const handleChangeAvailability = () => {
+    if (!selectedProduct) return
+    setIsLoading(true)
+    Products.changeAvailability({
+      token:userSession.token!,
+      selectedProduct:selectedProduct,
+      setWithResponse:setWithResponse,
+      setSelectedProduct:setSelectedProduct})
+    setDeletingProduct(false)
+    setIsLoading(false)
   }
+  
   useEffect(() => {
+    if (!products) return
     if (setSeeResetFilters) {
       if (products.length === 0){
         setSeeResetFilters(true)
@@ -130,37 +88,43 @@ function ProfileProducts( {products, editing, setSeeResetFilters, setProducts}:P
   },[products])
   return (
     <>
-    <div className='MappedProducts NoScrollBar'>
-      {products.map((product) => (
-          <div className='ProductContainer' key={product._id}>
-            <ProductCard key={product.description} product={product}/>
-            {editing && 
-            <Box sx={{display:'flex', flexDirection:'column-reverse', position:'absolute', bottom:0, right:0, gap:2
-            }}>
-              <IconButton
-              size="large"
-              onClick={() => handleEditProduct(product)}
-              sx={{bgcolor:'#346beb'}}
-              >
-                <EditIcon/>
-              </IconButton>
-              <IconButton
-              size="large"
-              onClick={() => handleDeleteAttemp(product)}
-              sx={{bgcolor:product.able?'#FF3333' : 'green'}}
-              >
-                {product.able?
-                  <DeleteIcon color='action'/>
-                :
-                  <AutorenewIcon color='action'/>
-                }
-              </IconButton>
-            </Box>}
-          </div>
-      ))}
-    </div>
-    {products.length === 0 && 
-      <LampLoader/>
+    {products?
+      <>
+        <div className='MappedProducts NoScrollBar'>
+          {products.map((product) => (
+            <div className='ProductContainer' key={product._id}>
+              <ProductCard key={product.description} product={product}/>
+              {editing && 
+              <Box sx={{display:'flex', flexDirection:'column-reverse', position:'absolute', bottom:0, right:0, gap:2
+              }}>
+                <IconButton
+                size="large"
+                onClick={() => handleEditProduct(product)}
+                sx={{bgcolor:'#346beb'}}
+                >
+                  <EditIcon/>
+                </IconButton>
+                <IconButton
+                size="large"
+                onClick={() => handleDeleteAttemp(product)}
+                sx={{bgcolor:product.able?'#FF3333' : 'green'}}
+                >
+                  {product.able?
+                    <DeleteIcon color='action'/>
+                  :
+                    <AutorenewIcon color='action'/>
+                  }
+                </IconButton>
+              </Box>}
+            </div>
+        ))}
+      </div>
+      {products.length === 0 && 
+        <LampLoader/>
+      }
+    </>
+        :
+    <LampLoader/>
     }
     {managingProduct && selectedProduct &&
       <OverScreen onClick={() => {setSelectedProduct(null)}}>

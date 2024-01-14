@@ -1,4 +1,4 @@
-import { Container, Typography } from "@mui/material";
+import { Container, Typography, Pagination } from "@mui/material";
 import './index.css';
 import useUser from "../../../hooks/useUser";
 import ComunityLoader from "../../../commons/ComunityLoader";
@@ -15,19 +15,24 @@ import { Rating } from "@mui/material"
 function Finder() {
   const [ isLoading, setIsLoading ] = useState(false)
   const {userSession} = useContext(UserSessionContext);
-  const { GetUsers } = useUser({setIsLoading});
+  const { GetUsers } = useUser();
   const [ users, setUsers ] = useState<UserModel[]>([]);
   const [ stars, setStars ] = useState(0)
   const [ nameFilter, setNameFilter ] = useState<string|null>(null);
+  const [userPage, setUserPage] = useState(1)
+  const [totalUsers,setTotalUsers] = useState(1)
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true)
       const range = userSession.user === null || userSession.user?.range === 'user'? 'host' : 'user' 
-      const data = await GetUsers({range:range, page:1, page_size:50});
-      setUsers(data);
+      const {users, totalUsers} = await GetUsers({range:range, page:userPage, page_size:20});
+      setUsers(users);
+      setTotalUsers(totalUsers)
+      setIsLoading(false)
     };
     fetchData();
-  },[userSession]);
+  },[userSession, userPage]);
 
   const handleClear = () => {
     setStars(0)
@@ -48,6 +53,9 @@ function Finder() {
         user.last_name.toLocaleLowerCase().includes(nameFilter)))
     );
   });
+  const handleUserPageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setUserPage(value);
+  };
 
   if(isLoading) {
     return <ComunityLoader/>;
@@ -77,6 +85,16 @@ function Finder() {
           <ProfileCard user={user} key={index}/>
         )}
       </div>
+      <Pagination 
+          count={totalUsers} 
+          page={userPage} 
+          onChange={handleUserPageChange} 
+          sx={{ 
+            position: 'fixed',
+            bottom: 0,
+            zIndex: 1,
+          }}
+        />
     </Container>
   )
 }

@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom"
-import { UserSessionContext, UserType } from "../contexts/authContext"
-import { useContext, useState } from "react"
+import { UserSessionContext } from "../contexts/authContext"
+import { useContext } from "react"
 import { WithResponseModel } from "../models/withResponse"
 import { BACKEND_TOOLS } from "../models/BACKEND_TOOLS"
+import { UserModel } from "../models/user/userModel"
 
 interface RegisterProps {
     userData:RegisterData,
@@ -28,7 +29,8 @@ type RegisterData = {
 
 function useAuth() {
     const navigate = useNavigate()
-    const {setIsLogged, setUserSession} = useContext(UserSessionContext)
+    const {setIsLogged, setUserSession, userSession} = useContext(UserSessionContext)
+    let user:UserModel|null = null
     async function Login ({loginData, setWithResponse}:LoginProps) {
         const API = BACKEND_TOOLS.API_URI+'/auth/user'
         try {
@@ -44,7 +46,8 @@ function useAuth() {
             if(res.ok){
                 setUserSession(data)
                 setIsLogged(true)
-                navigate("/home")
+                user = data.user
+                setWithResponse({msg:`¡Bienvenido ${data.user.name}`, color:'success'})
             }
             if (!res.ok){
                 setWithResponse({msg:JSON.stringify(data), color:'error'})
@@ -52,6 +55,16 @@ function useAuth() {
         }
         catch (err) {
             setWithResponse({msg:String(err), color:'error'})
+        }
+        finally{
+            setTimeout(()=>{
+                if (user && user.range === 'admin'){
+                    navigate("/admin")
+                }
+                if (user && user.range !== 'admin'){
+                    navigate("/home")
+                }
+            },1000)
         }
     }
     function LogOut () {
@@ -75,10 +88,13 @@ function useAuth() {
             if (res.ok){
               setUserSession(data)
               setIsLogged(true)
-              navigate('/home')
+              if (!userSession.user){
+                navigate('/home')
+              }
+              setWithResponse({msg:'Usuario registrado exitosamente', color:'success'})
             }
             if (!res.ok){
-              setWithResponse({msg:'algo salió mal, inténtalo después. '+data.error, color:'error'})
+              setWithResponse({msg:data.error, color:'error'})
             }
         }
         catch (err) {

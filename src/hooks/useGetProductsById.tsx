@@ -1,25 +1,33 @@
 import { ProductModel } from "../models/product/productModel"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { BACKEND_TOOLS } from "../models/BACKEND_TOOLS"
 import { useContext } from "react"
 import { UserSessionContext } from "../contexts/authContext"
 
 
-function useGetProductsById({userId}:{userId:string}) {
+function useGetProductsById() {
     const [ products, setProducts ] = useState<ProductModel[]>([])
-    const API = BACKEND_TOOLS.API_URI+"/product/"+userId
     const {userSession } = useContext(UserSessionContext)
-    useEffect(()=>{
-        fetch(API,{
-            headers:{
-                'Authorization':userSession.token!,
-                'Enterprise-Id':BACKEND_TOOLS.ENTERPRISE_ID
+    const getProducts = async({userId}:{userId:string}) => {
+        const API = BACKEND_TOOLS.API_URI+"/product/"+userId
+        try{
+            const res = await fetch(API,{
+                headers:{
+                    'Authorization':userSession.token!,
+                    'Enterprise-Id':BACKEND_TOOLS.ENTERPRISE_ID
+                    }
+                })
+            const data =  await res.json()
+            if (res.ok){
+                setProducts(data.products)
             }
-        })
-        .then(res => res.json())
-        .then(data => setProducts(data.products))
-    },[])
-    return {products, setProducts}
+        }
+        catch{
+            console.log('error al recuperar productos por id')
+        }
+        return {products, setProducts}
+    }
+    return {getProducts}
 }
 
 export default useGetProductsById

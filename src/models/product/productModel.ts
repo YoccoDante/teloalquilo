@@ -8,6 +8,8 @@ export enum PRODUCT_CATEGORIES {
     ROOMIE = 'roomie'
 }
 
+export const CATEGORIES = ['casa','minidepartamento','garaje','departamento','duplex','habitación','roomie']
+
 export type ProductModel = {
     _id:string,
     title:string,

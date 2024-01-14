@@ -56,6 +56,7 @@ function NavBar() {
             {navBarLinks.map((link) => 
               <Link to={link.to} className='link' key={link.label}>{link.label}</Link>
             )}
+            {userSession.user?.range === 'admin'&&<Link to="/admin" className='link'>administrador</Link>}
             {userSession.user ? 
               <RoundedPic pic={userSession.user.profile_pic} to={'/profile'}/>
             :

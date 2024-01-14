@@ -7,7 +7,8 @@ export type UserModel = {
     stars:number,
     phone_number:string,
     gender:string ,
-    range:'user'|'host',
+    range:'user'|'host'|'admin',
+    last_activity:any
 }
 
 export type SetUserDataModel = {

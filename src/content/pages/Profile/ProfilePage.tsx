@@ -14,7 +14,7 @@ import { WithResponseModel } from "../../../models/withResponse"
 
 function ProfilePage() {
   const { userSession} = useContext(UserSessionContext)
-  const [ profilePic, setProfilePic ] = useState(userSession.user?.profile_pic)
+  const [profilePic, setProfilePic] = useState(userSession.user?.profile_pic || DefaultPic);
   const [ editing, setEditing ] = useState(false)
   const [ withResponse, setWithResponse ] = useState<WithResponseModel | null>(null)
   const [ selectingPic, setSelectingPic ] = useState(false)
@@ -32,12 +32,9 @@ function ProfilePage() {
   const handleSetPic = () => {
     setSelectingPic(true)
   }
-  const handleCancel = () => {
-    setEditing(false)
-  }
 
   useEffect(() => {
-    setProfilePic(userSession.user?.profile_pic)
+    setProfilePic(userSession.user?.profile_pic || DefaultPic);
   },[userSession.user?.profile_pic])
 
   return (

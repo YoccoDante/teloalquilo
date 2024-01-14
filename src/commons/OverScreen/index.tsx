@@ -1,6 +1,5 @@
 import React, { MouseEventHandler } from 'react'
 import { Box } from '@mui/material'
-import { JsxElement } from 'typescript'
 
 interface OverScreenProps {
   children:JSX.Element,
@@ -10,20 +9,21 @@ interface OverScreenProps {
 function OverScreen({children, onClick}:OverScreenProps) {
   return (
     <Box
-    className='BlackBG'
-    onClick={onClick}
-    sx={{
-      position:'fixed',
-      top:0,
-      left:0,
-      width:'100vw',
-      zIndex:4,
-      height:'100vh',
-      display:'flex',
-      justifyContent:'center',
-      alignItems:'center',
-      overflowY:'hidden'
-    }}>
+      onClick={onClick}
+      sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflowY: 'hidden',
+        zIndex: 4,
+        bgcolor: 'rgba(0, 0, 0, 0.5)'
+      }}
+    >
       <div onClick={(e) => e.stopPropagation()}>
         {children}
       </div>

@@ -1,16 +1,26 @@
 import { Box, Tab } from '@mui/material'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { UserSessionContext } from '../../../contexts/authContext'
 import ProfilePage from './ProfilePage'
 import MyProducts from './MyProducts'
 import useGetProductsById from '../../../hooks/useGetProductsById'
 import ProfileOperations from './ProfileOparations'
+import { ProductModel } from '../../../models/product/productModel'
 
 function Profiletabs() {
   const {userSession} = useContext(UserSessionContext)
   const userId = userSession.user!._id
-  const {products, setProducts} = useGetProductsById({userId})
+  const [products, setProducts] = useState<ProductModel[]>([])
+  const Products = useGetProductsById()
+  useEffect(() => {
+      async function getProducts () {
+          if (!userId) return
+          const {products} = await Products.getProducts({userId:userId})
+          setProducts(products)
+      }
+      getProducts()
+  },[])
   const [ currentTab, setCurrenTab ] = useState('1')
   const handleChange = (e:React.SyntheticEvent, value:string) => {
     setCurrenTab(value)
