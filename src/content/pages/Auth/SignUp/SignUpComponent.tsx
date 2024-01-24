@@ -4,9 +4,8 @@ import { CopyRight } from "../../../../commons/Copyright";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import GenderMenu from "../../../../commons/GenderMenu";
-import { WithResponseModel } from "../../../../models/withResponse";
-import ResponseSnackBar from "../../../../commons/ResponseSnackBar";
 import useAuth from "../../../../hooks/useAuth";
+import { useLoadingContext } from "../../../../contexts/loadingContext";
 
 export const SignUpComponent= () =>{
     const Auth = useAuth()
@@ -16,8 +15,7 @@ export const SignUpComponent= () =>{
     const [password, setPassword] = useState("");
     const [phone_number, setPhone_Number] = useState("");
     const [gender, setGender] = useState('Seleccionar');
-    const [isLoading, setIsLoading] = useState(false);
-    const [withResponse, setWithResponse] = useState<WithResponseModel|null>(null);
+    const {isLoading, setIsLoading} = useLoadingContext()
     const [asHost, setAsHost] = useState(false);
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       setIsLoading(true)
@@ -31,7 +29,7 @@ export const SignUpComponent= () =>{
         "phone_number":phone_number,
         "range":asHost? 'host' : 'user'
       }
-      Auth.Register({userData, setWithResponse})
+      Auth.Register({userData})
       setIsLoading(false)
     };
     return (
@@ -140,9 +138,6 @@ export const SignUpComponent= () =>{
           </Grid>
           <CopyRight/>
         </Box>
-        {withResponse &&
-          <ResponseSnackBar withResponse={withResponse} setWithResponse={setWithResponse}/>
-        }
       </Box>
     )
 }

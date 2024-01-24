@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {FormControlLabel, Box,Avatar,Typography, TextField, Button, Grid, Checkbox, IconButton } from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { CopyRight } from "../../../../commons/Copyright";
@@ -6,13 +6,11 @@ import useSetLoginData from "../../../../hooks/useSetLoginData";
 import { Link } from "react-router-dom";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { WithResponseModel } from "../../../../models/withResponse";
-import ResponseSnackBar from "../../../../commons/ResponseSnackBar";
+import { useLoadingContext } from "../../../../contexts/loadingContext";
 
 export const SignInComponent= () => {
-    const [ withResponse, setWithResponse ] = useState<WithResponseModel | null>(null)
-    const [ isLoading, setIsLoading ] = useState(false)
-    const Login = useSetLoginData({setIsLoading, setWithResponse})
+    const {isLoading} = useLoadingContext()
+    const Login = useSetLoginData()
     const [ seePassword, setSeePassword ] = useState(false)
     const handleSeePassword = () => {
       setSeePassword(true)
@@ -104,9 +102,6 @@ export const SignInComponent= () => {
           </Grid>
           <CopyRight/>
         </Box>
-        {withResponse &&
-          <ResponseSnackBar withResponse={withResponse} setWithResponse={setWithResponse}/>
-        }
       </Box>
     )
 }

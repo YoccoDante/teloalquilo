@@ -1,23 +1,34 @@
-import { Box, Tab } from '@mui/material'
+import { Box, Pagination, Tab } from '@mui/material'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { useContext, useEffect, useState } from 'react'
 import { UserSessionContext } from '../../../contexts/authContext'
 import ProfilePage from './ProfilePage'
 import MyProducts from './MyProducts'
-import useGetProductsById from '../../../hooks/useGetProductsById'
 import ProfileOperations from './ProfileOparations'
 import { ProductModel } from '../../../models/product/productModel'
+import useProducts from '../../../hooks/useGetProducts'
 
 function Profiletabs() {
   const {userSession} = useContext(UserSessionContext)
   const userId = userSession.user!._id
   const [products, setProducts] = useState<ProductModel[]>([])
-  const Products = useGetProductsById()
+  const Products = useProducts()
+  const [page, setPage] = useState(1)
+  const [pages, setPages] = useState(0)
+  const pageSize = 10
+  const handleProductPageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
   useEffect(() => {
       async function getProducts () {
           if (!userId) return
-          const {products} = await Products.getProducts({userId:userId})
+          const {products, pages} = await Products.getProductsById({
+            userId:userId,
+            page:page,
+            pageSize:pageSize
+          })
           setProducts(products)
+          setPages(pages)
       }
       getProducts()
   },[])
@@ -41,7 +52,19 @@ function Profiletabs() {
         </TabPanel>
         <TabPanel value='2'>
         {products && userSession.user?.range === 'host' &&
-          <MyProducts products={products} setProducts={setProducts}/>
+          <>
+            <MyProducts products={products} setProducts={setProducts}/>
+            <Pagination
+              count={pages} 
+              page={page} 
+              onChange={handleProductPageChange} 
+              sx={{ 
+                position: 'fixed',
+                bottom: 0,
+                zIndex: 1,
+              }}
+            />
+          </>
         }
         </TabPanel>
         <ProfileOperations/>

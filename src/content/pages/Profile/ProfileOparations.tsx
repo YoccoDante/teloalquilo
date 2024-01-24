@@ -7,16 +7,12 @@ import useAuth from '../../../hooks/useAuth';
 import { useContext, useState } from 'react';
 import { UserSessionContext } from '../../../contexts/authContext';
 import ProductOperations from './ProductOptions';
-import { Alert, Snackbar } from '@mui/material'
-import { WithResponseModel } from '../../../models/withResponse';
-import ResponseSnackBar from '../../../commons/ResponseSnackBar';
 
 function ProfileOperations() {
     const {LogOut} = useAuth()
     const { userSession } = useContext(UserSessionContext)
     const [ open, setOpen ] = useState(true)
     const [ manageProducts, setManageProducts ] = useState(false)
-    const [ withResponse, setWithResponse ] = useState<WithResponseModel | null>(null)
 
   return (
     <>
@@ -43,10 +39,7 @@ function ProfileOperations() {
       }
       </SpeedDial>
       {manageProducts && 
-        <ProductOperations setWithResponse={setWithResponse} setManaging={setManageProducts}/>
-      }
-      {withResponse &&
-        <ResponseSnackBar setWithResponse={setWithResponse} withResponse={withResponse}/>
+        <ProductOperations setManaging={setManageProducts}/>
       }
     </>
   )

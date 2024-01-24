@@ -7,15 +7,15 @@ import OverScreen from '../../../../../commons/OverScreen'
 import useProducts from '../../../../../hooks/useGetProducts'
 import { UserSessionContext } from '../../../../../contexts/authContext'
 import ProductTabFilterBar from './Filterbar'
+import { useLoadingContext } from '../../../../../contexts/loadingContext'
 
 interface ProductsTabProps {
-    setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel|null>>,
     products:ProductModel[],
     setProducts:React.Dispatch<React.SetStateAction<ProductModel[]>>,
-    setIsLoading:React.Dispatch<React.SetStateAction<boolean>>
+    fetchProducts:any,
 }
 
-function ProductsTab({setWithResponse, products, setProducts, setIsLoading}:ProductsTabProps) {
+function ProductsTab({products, setProducts, fetchProducts}:ProductsTabProps) {
     const {userSession} = useContext(UserSessionContext)
     const [selectedProduct, setSelectedProduct] = useState<ProductModel|null>(null)
     const Products = useProducts()
@@ -23,6 +23,7 @@ function ProductsTab({setWithResponse, products, setProducts, setIsLoading}:Prod
     const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
     const [starsFilter, setStarsFilter] = useState<number | null>(null);
     const [priceFilter, setPriceFilter] = useState<number | null>(null);
+    const {setIsLoading} = useLoadingContext()
     const filteredProducts = useMemo(() => {
         return products.filter((product) => {
           return (
@@ -39,7 +40,6 @@ function ProductsTab({setWithResponse, products, setProducts, setIsLoading}:Prod
             token:userSession.token!,
             products:products,
             selectedProduct:selectedProduct,
-            setWithResponse:setWithResponse,
             setProducts:setProducts,
             setSelectedProduct:setSelectedProduct
         })
@@ -57,26 +57,27 @@ function ProductsTab({setWithResponse, products, setProducts, setIsLoading}:Prod
         setTitleFilter={setTitleFilter}
         starsFilter={starsFilter}
         setStarsFilter={setStarsFilter}
+        fetchProducts={fetchProducts}
     />
     <Box
     sx={{
         position:'relative',
-        display: products.length === 0 ? 'flex' : 'grid',
+        display: 'flex',
         gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
         gap: '1rem',
         alignItems: 'center',
         justifyContent: 'center',
         p:4,
-        boxSizing:'border-box'
+        boxSizing:'border-box',
     }}>
         {products.length === 0 && <p style={{fontSize:'24px', textAlign: 'center'}}>No hay productos aún</p>}
         {filteredProducts.map((product) => {
-            return <>
-                <ProductCard key={product._id} product={product}/>
-                <Button color='error' onClick={() => setSelectedProduct(product)}>
+            return <Box sx={{display:'flex', flexDirection:'column'}} key={product._id}>
+                <ProductCard product={product}/>
+                <Button color='error' onClick={() => setSelectedProduct(product)} variant='contained'>
                     Eliminar producto
                 </Button>
-            </>
+            </Box>
         })}
         {selectedProduct &&
             <OverScreen>

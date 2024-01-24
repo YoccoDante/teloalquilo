@@ -6,7 +6,6 @@ import React, { useContext, useState } from "react"
 import CloseIcon from "../../../components/CloseIcon"
 import { Box, Rating } from '@mui/material'
 import Typography from "../../../components/Typography"
-import { WithResponseModel } from "../../../models/withResponse"
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -15,8 +14,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom'
 import { UserSessionContext } from '../../../contexts/authContext'
-import ResponseSnackBar from '../../../commons/ResponseSnackBar'
 import { BACKEND_TOOLS } from "../../../models/BACKEND_TOOLS"
+import { useWithResponseContext } from "../../../contexts/snackBarContext"
+import { useLoadingContext } from "../../../contexts/loadingContext"
 
 interface DetailsContentProps {
     root :ProductRootModel
@@ -25,11 +25,11 @@ interface DetailsContentProps {
 const API = BACKEND_TOOLS.API_URI+'/rate/'
 
 function DetailsContent( {root}:DetailsContentProps ) {
+  const {setWithResponse} = useWithResponseContext()
   const {userSession} = useContext(UserSessionContext)
   const navigate = useNavigate()
   const comments = root.comments
-  const [withResponse, setWithResponse] = useState<WithResponseModel | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const {isLoading, setIsLoading} = useLoadingContext()
   const [open, setOpen] = useState(false)
   const [ratingValue, setRatingValue] = useState<number>(0);
 
@@ -164,9 +164,6 @@ function DetailsContent( {root}:DetailsContentProps ) {
           </Button>
         </DialogActions>
       </Dialog>
-      {withResponse &&
-        <ResponseSnackBar setWithResponse={setWithResponse} withResponse={withResponse}/>
-      }
     </Box>
   )
 }

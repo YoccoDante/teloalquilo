@@ -11,9 +11,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import { Rating } from "@mui/material"
+import { useLoadingContext } from "../../../contexts/loadingContext";
 
 function Finder() {
-  const [ isLoading, setIsLoading ] = useState(false)
+  const {isLoading, setIsLoading} = useLoadingContext()
   const {userSession} = useContext(UserSessionContext);
   const { GetUsers } = useUser();
   const [ users, setUsers ] = useState<UserModel[]>([]);

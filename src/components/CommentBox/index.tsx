@@ -5,12 +5,11 @@ import './index.css'
 import React, { useContext, useState } from 'react';
 import { UserSessionContext } from '../../contexts/authContext';
 import { useNavigate, useParams } from 'react-router-dom';
-import { WithResponseModel } from '../../models/withResponse';
-import ResponseSnackBar from '../../commons/ResponseSnackBar';
 import Comment from '../Comment';
 import { BACKEND_TOOLS } from '../../models/BACKEND_TOOLS';
+import { useWithResponseContext } from '../../contexts/snackBarContext';
 
-const API = 'http://127.0.0.1:5000/comment/new';
+const API = `${BACKEND_TOOLS.API_URI}/comment/new`;
 
 interface CommentBoxProps {
   comments: CommentModel[];
@@ -21,7 +20,7 @@ function CommentBox({comments}: CommentBoxProps) {
   const { userSession } = useContext(UserSessionContext);
   const [ comment, setComment ] = useState('');
   const { user_id, product_id } = useParams();
-  const [withResponse, setWithResponse] = useState<WithResponseModel | null>(null);
+  const {setWithResponse} = useWithResponseContext()
 
   const handleSendComment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -95,9 +94,6 @@ function CommentBox({comments}: CommentBoxProps) {
       Enviar
     </Button>
   </Box>
-  {withResponse &&
-    <ResponseSnackBar withResponse={withResponse} setWithResponse={setWithResponse}/>
-  }
   </>
   );
 }

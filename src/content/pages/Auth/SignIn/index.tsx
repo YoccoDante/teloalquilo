@@ -3,7 +3,6 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { SignInComponent } from './SignInComponent';
-import {Typography } from "@mui/material";
 
 const theme = createTheme();
 const ImagenDeFondo = 'url(https://www.businessempresarial.com.pe/wp-content/uploads/2023/03/departamentos-de-lujo-2.jpeg)';

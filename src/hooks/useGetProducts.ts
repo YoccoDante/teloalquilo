@@ -1,6 +1,8 @@
 import { ProductModel } from "../models/product/productModel"
 import { BACKEND_TOOLS } from "../models/BACKEND_TOOLS"
-import { WithResponseModel } from "../models/withResponse"
+import { useWithResponseContext } from "../contexts/snackBarContext";
+import { useContext } from "react";
+import { UserSessionContext } from "../contexts/authContext";
 
 interface ProductData {
     products: ProductModel[];
@@ -10,19 +12,16 @@ interface ProductData {
 interface GetProductsProps {
     page:number,
     page_size:number,
-    setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel|null>>
 }
 
 interface CahngeAveilabilityProps {
     selectedProduct:ProductModel|null,
-    setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel|null>>,
     setSelectedProduct:React.Dispatch<React.SetStateAction<ProductModel|null>>,
     token:string
 }
 
 interface DeleteProductProps {
     selectedProduct:ProductModel|null,
-    setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel|null>>,
     setProducts:React.Dispatch<React.SetStateAction<ProductModel[]>>,
     products:ProductModel[],
     setSelectedProduct:React.Dispatch<React.SetStateAction<ProductModel|null>>,
@@ -30,7 +29,9 @@ interface DeleteProductProps {
 }
 
 function useProducts() {
-    const getProducts = async ({page, page_size, setWithResponse}:GetProductsProps):Promise<ProductData> => {
+    const {setWithResponse} = useWithResponseContext()
+    const {userSession} = useContext(UserSessionContext)
+    const getProducts = async ({page, page_size}:GetProductsProps):Promise<ProductData> => {
         const API = BACKEND_TOOLS.API_URI+`/product/result?page=${page}&page_size=${page_size}`
         try {
             const res = await fetch(API,{
@@ -51,7 +52,7 @@ function useProducts() {
             return {products:[], total:0}
         }
     }
-    const changeAvailability = async ({token, selectedProduct, setWithResponse, setSelectedProduct}:CahngeAveilabilityProps) => {
+    const changeAvailability = async ({token, selectedProduct, setSelectedProduct}:CahngeAveilabilityProps) => {
         const API = BACKEND_TOOLS.API_URI+'/product/'
         const product_id = selectedProduct? selectedProduct._id : ''
         const able = !selectedProduct?.able
@@ -84,7 +85,7 @@ function useProducts() {
             setSelectedProduct(null)
         }
     }
-    const deleteProduct = async ({token, selectedProduct, setWithResponse, setProducts, products, setSelectedProduct}:DeleteProductProps) => {
+    const deleteProduct = async ({token, selectedProduct, setProducts, products, setSelectedProduct}:DeleteProductProps) => {
         const API = BACKEND_TOOLS.API_URI+'/product/'
         const product_id = selectedProduct?._id? selectedProduct._id : ''
         const deleteData = {token:token, product_id:product_id}
@@ -116,10 +117,32 @@ function useProducts() {
         setSelectedProduct(null)
         }
     }
+    const getProductsById = async({userId, page, pageSize}:{userId:string, page:number, pageSize:number}) => {
+        const API = `${BACKEND_TOOLS.API_URI}/product/by_id/result?page=${page}&page_size=${pageSize}&user_id=${userId}`
+        try{
+            const res = await fetch(API,{
+                headers:{
+                    'Authorization':userSession.token!,
+                    'Enterprise-Id':BACKEND_TOOLS.ENTERPRISE_ID
+                    }
+                })
+            const data =  await res.json()
+            if (res.ok){
+                return {products:data.products, pages:data.pages}
+            }
+            else {
+                return {products:[], pages:0}
+            }
+        }
+        catch{
+            return {products:[],pages:0}
+        }
+    }
     return {
         getProducts,
         changeAvailability,
-        deleteProduct
+        deleteProduct,
+        getProductsById
     }
 }
 

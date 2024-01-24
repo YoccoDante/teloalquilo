@@ -10,18 +10,18 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
-import { WithResponseModel } from '../../../models/withResponse'
-import ResponseSnackBar from '../../../commons/ResponseSnackBar'
 import { BACKEND_TOOLS } from '../../../models/BACKEND_TOOLS'
+import { useWithResponseContext } from '../../../contexts/snackBarContext'
+import { useLoadingContext } from '../../../contexts/loadingContext'
 
 const API = BACKEND_TOOLS.API_URI+'/rate/'
 
 function CustomerInfo( {user}:{user:UserModel} ) {
+  const {setWithResponse} = useWithResponseContext()
   const {userSession} = useContext(UserSessionContext)
   const [ open, setOpen ] = useState(false)
   const navigate = useNavigate()
-  const [ isLoading, setIsLoading ] = useState(false)
-  const [ withResponse, setWithResponse ] = useState<WithResponseModel | null>(null)
+  const {isLoading, setIsLoading} = useLoadingContext()
   const [ratingValue, setRatingValue] = useState<number>(0);
 
   const handleRatingChange = (event: React.ChangeEvent<{}>, newValue: number | null) => {
@@ -103,9 +103,6 @@ function CustomerInfo( {user}:{user:UserModel} ) {
           </Button>
         </DialogActions>
       </Dialog>
-      {withResponse &&
-        <ResponseSnackBar setWithResponse={setWithResponse} withResponse={withResponse}/>
-      }
     </div>
   )
 }

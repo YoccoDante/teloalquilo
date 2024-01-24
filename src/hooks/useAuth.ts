@@ -1,18 +1,16 @@
 import { useNavigate } from "react-router-dom"
 import { UserSessionContext } from "../contexts/authContext"
 import { useContext } from "react"
-import { WithResponseModel } from "../models/withResponse"
 import { BACKEND_TOOLS } from "../models/BACKEND_TOOLS"
 import { UserModel } from "../models/user/userModel"
+import { useWithResponseContext } from "../contexts/snackBarContext"
 
 interface RegisterProps {
     userData:RegisterData,
-    setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel | null>>,
 }
 
 interface LoginProps {
     loginData:LoginData,
-    setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel | null>>,
 }
 
 type LoginData = {
@@ -30,8 +28,9 @@ type RegisterData = {
 function useAuth() {
     const navigate = useNavigate()
     const {setIsLogged, setUserSession, userSession} = useContext(UserSessionContext)
+    const {setWithResponse} = useWithResponseContext()
     let user:UserModel|null = null
-    async function Login ({loginData, setWithResponse}:LoginProps) {
+    async function Login ({loginData}:LoginProps) {
         const API = BACKEND_TOOLS.API_URI+'/auth/user'
         try {
             const res = await fetch(API, {
@@ -73,7 +72,7 @@ function useAuth() {
         setUserSession({user:null, token:null})
     }
 
-    async function Register ({userData, setWithResponse}:RegisterProps) {
+    async function Register ({userData}:RegisterProps) {
         const API = BACKEND_TOOLS.API_URI+'/user/new'
         try {
             const res = await fetch(API, {

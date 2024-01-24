@@ -1,6 +1,7 @@
 import { Box, Rating, Typography, Autocomplete, TextField, Select, MenuItem, Button } from '@mui/material';
 import { UserModel } from '../../../../../models/user/userModel';
 import React from 'react';
+import { useLoadingContext } from '../../../../../contexts/loadingContext';
 
 interface UserTabFilterBarProps {
     users: UserModel[],
@@ -11,10 +12,10 @@ interface UserTabFilterBarProps {
     starsFilter: number|null,
     setStarsFilter: React.Dispatch<React.SetStateAction<number|null>>,
     fetchUsers:any,
-    isLoading:boolean
 }
 
-function UserTabFilterBar({users, nameFilter, setNameFilter, rangeFilter, setRangeFilter, starsFilter, setStarsFilter, fetchUsers, isLoading}:UserTabFilterBarProps) {
+function UserTabFilterBar({users, nameFilter, setNameFilter, rangeFilter, setRangeFilter, starsFilter, setStarsFilter, fetchUsers}:UserTabFilterBarProps) {
+  const {isLoading} = useLoadingContext()
   return (
     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '15px', mb: 2, p: 2, bgcolor: '#f5f5f5', borderRadius: '5px', alignItems:'center'}}>
       <Box sx={{ display: 'flex', gap: '15px', alignItems: 'center' }}>

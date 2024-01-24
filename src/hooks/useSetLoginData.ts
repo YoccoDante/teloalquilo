@@ -1,13 +1,9 @@
 import { useState } from "react";
 import useAuth from "./useAuth";
-import { WithResponseModel } from "../models/withResponse";
+import { useLoadingContext } from "../contexts/loadingContext";
 
-interface SetLoginDataProps {
-  setIsLoading:React.Dispatch<React.SetStateAction<boolean>>,
-  setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel | null>>,
-}
-
-function useSetLoginData({setIsLoading, setWithResponse}:SetLoginDataProps) {
+function useSetLoginData () {
+    const {setIsLoading} = useLoadingContext()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const Auth = useAuth()
@@ -15,7 +11,7 @@ function useSetLoginData({setIsLoading, setWithResponse}:SetLoginDataProps) {
         e.preventDefault()
         setIsLoading(true)
         const loginData = {email, password}
-        await Auth.Login({loginData, setWithResponse})
+        await Auth.Login({loginData})
         setIsLoading(false)
       };
     

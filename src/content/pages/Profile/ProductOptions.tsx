@@ -5,16 +5,15 @@ import { Button } from '@mui/material'
 import './index.css'
 import AddProduct from './AddProduct'
 import OverScreen from '../../../commons/OverScreen'
-import { WithResponseModel } from '../../../models/withResponse'
+import { useLoadingContext } from '../../../contexts/loadingContext'
 
 interface ProductOperationsProps {
   setManaging:React.Dispatch<React.SetStateAction<boolean>>,
-  setWithResponse: React.Dispatch<React.SetStateAction<WithResponseModel | null>>
 }
 
-function ProductOperations({setManaging, setWithResponse}:ProductOperationsProps) {
+function ProductOperations({setManaging}:ProductOperationsProps) {
   const [ currentTab, setCurrenTab ] = useState('1')
-  const [ isLoading, setIsLoading ] = useState(false)
+  const {isLoading, setIsLoading} = useLoadingContext()
   const handleChange = (e:React.SyntheticEvent, value:string) => {
     setCurrenTab(value)
   }
@@ -41,7 +40,10 @@ function ProductOperations({setManaging, setWithResponse}:ProductOperationsProps
               <Tab color='#fff' value='1' label='Añadir Producto'/>
             </TabList>
           </Box>
-          <TabPanel value='1'><AddProduct isLoading={isLoading} setIsLoading={setIsLoading} setManaging={setManaging} setWithResponse={setWithResponse}/></TabPanel>
+          <TabPanel value='1'>
+            <AddProduct
+            setManaging={setManaging}/>
+          </TabPanel>
         </TabContext>
       </Box>
       <Box

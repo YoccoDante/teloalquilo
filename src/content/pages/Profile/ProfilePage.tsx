@@ -10,15 +10,16 @@ import ProfileOperations from "./ProfileOparations"
 import { SetMinDataForm } from "../../../components/SetMinDataForm"
 import SelectPic from "./SelectPic"
 import { Snackbar, Alert } from "@mui/material"
-import { WithResponseModel } from "../../../models/withResponse"
+import ChangeSelfPasswordDialog from "./ChangeSelfPasswordDialog"
+import { useLoadingContext } from "../../../contexts/loadingContext"
 
 function ProfilePage() {
   const { userSession} = useContext(UserSessionContext)
   const [profilePic, setProfilePic] = useState(userSession.user?.profile_pic || DefaultPic);
   const [ editing, setEditing ] = useState(false)
-  const [ withResponse, setWithResponse ] = useState<WithResponseModel | null>(null)
   const [ selectingPic, setSelectingPic ] = useState(false)
   const [ editData, setEditData ] = useState(false)
+  const [changePassword, setChangePassword] = useState(false)
   const gender = userSession.user?.gender === 'male'? 'masculino' : userSession.user?.gender === 'female'? 'femenino' : 'otro'
   const profileInfo = [
     {title:'Nombre:', content:userSession.user!.name + ' ' + userSession.user!.last_name},
@@ -58,6 +59,7 @@ function ProfilePage() {
           mb:8
       }}>
           <img className="ProfilePic" src={profilePic} onError={() => setProfilePic(DefaultPic)}/>
+          <Button onClick={() => setChangePassword(true)}>Cambiar contraseña</Button>
           <Typography component='dt'>
             Calificación:
           </Typography>
@@ -118,7 +120,6 @@ function ProfilePage() {
       <ProfileOperations/>
       {editData &&
       <SetMinDataForm
-        setWithResponse={setWithResponse}
         setEditing={setEditing}
         user={userSession.user}
         setEditData={setEditData}
@@ -127,15 +128,14 @@ function ProfilePage() {
       <SelectPic
         title="¡Actualiza tu foto de perfil!"
         content="Navega por tus archivos y selecciona la foto que más te guste. Solo se permiten png, jpg, jpeg, jfif"
-        setWithResponse={setWithResponse}
         setSelectingPic={setSelectingPic}
       />}
-      <Snackbar open={withResponse !== null} onClose={() => setWithResponse(null)} autoHideDuration={6000} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-        <Alert  severity={withResponse?.color} sx={{ width: '100%' }}>
-          {withResponse?.msg}
-        </Alert>
-      </Snackbar>
     </Container>
+    {changePassword &&
+      <ChangeSelfPasswordDialog
+        setChangePassword={setChangePassword}
+      />
+    }
     </>
   )
 }

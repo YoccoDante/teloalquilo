@@ -5,22 +5,22 @@ import { Typography, Pagination } from '@mui/material';
 import useUser from '../../../../hooks/useUser';
 import { UserModel } from '../../../../models/user/userModel';
 import UserTab from './userTab/UserTab';
-import { WithResponseModel } from '../../../../models/withResponse';
-import ResponseSnackBar from '../../../../commons/ResponseSnackBar';
 import ProductsTab from './productsTab/ProductsTab';
 import useGetProducts from '../../../../hooks/useGetProducts';
 import { ProductModel } from '../../../../models/product/productModel';
+import { useWithResponseContext } from '../../../../contexts/snackBarContext';
+import { useLoadingContext } from '../../../../contexts/loadingContext';
 
 function Users() {
+  const {setIsLoading} = useLoadingContext()
+  const {setWithResponse} = useWithResponseContext()
   const [value, setValue] = useState<string>('1');
-  const [isLoading, setIsLoading] = useState(false)
   const [userPage, setUserPage] = useState(1)
   const [productPage, setProductPage] = useState(1)
   const [users, setUsers] = useState<UserModel[] | null>(null)
   const [products, setProducts] = useState<ProductModel[]>([])
   const [totalUsers, setTotalUsers] = useState(1)
   const [totalProducts, setTotalProducts] = useState(1)
-  const [withResponse, setWithResponse] = useState<WithResponseModel| null>(null)
   const Products = useGetProducts()
   const Users = useUser()
   
@@ -40,21 +40,22 @@ function Users() {
     setIsLoading(false)
   };
 
+  const fetchProducts = async () => {
+    setIsLoading(true)
+    try{
+      const {products, total} = await Products.getProducts({page:productPage,page_size:20})
+      setProducts(products);
+      setTotalProducts(total)
+    } catch {
+      setWithResponse({msg:'error al recuperar productos', color:'error'})
+    }
+    setIsLoading(false)
+  }
+
   useEffect(() => {
     fetchUsers();
   }, [userPage]);
   useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true)
-      try{
-        const {products, total} = await Products.getProducts({page:productPage,page_size:20, setWithResponse:setWithResponse})
-        setProducts(products);
-        setTotalProducts(total)
-      } catch {
-        setWithResponse({msg:'error al recuperar productos', color:'error'})
-      }
-      setIsLoading(false)
-    }
     fetchProducts();
   }, [productPage]);
 
@@ -80,14 +81,12 @@ function Users() {
         {users?
           <UserTab
             users={users}
-            setIsLoading={setIsLoading}
-            setWithResponse={setWithResponse}
             fetchUsers={fetchUsers}
-            isLoading={isLoading}
             setUsers={setUsers}
+            fetchProducts={fetchProducts}
           />
           :
-          <p style={{fontSize:'24px', textAlign: 'center'}}>No hay usuarios aún</p>
+          <p style={{fontSize:'24px', textAlign: 'center'}}>Cargando usuaios</p>
         }
         <Pagination 
           count={totalUsers} 
@@ -104,10 +103,14 @@ function Users() {
       <Typography component='h1'>Total de productos:</Typography>
         {products?
           <>
-            <ProductsTab setWithResponse={setWithResponse} products={products} setProducts={setProducts} setIsLoading={setIsLoading}/>
+            <ProductsTab
+            products={products}
+            setProducts={setProducts}
+            fetchProducts={fetchProducts}
+            />
           </>
           :
-          <p style={{fontSize:'24px', textAlign: 'center'}}>No hay productos aún</p>
+          <p style={{fontSize:'24px', textAlign: 'center'}}>Cargando producos, un momento</p>
         }
         <Pagination 
           count={totalProducts} 
@@ -120,9 +123,6 @@ function Users() {
           }}
         />
       </TabPanel>
-      {withResponse &&
-        <ResponseSnackBar setWithResponse={setWithResponse} withResponse={withResponse}/>
-      }
     </TabContext>
   );
 }

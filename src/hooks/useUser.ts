@@ -2,8 +2,9 @@ import React, { useContext} from 'react'
 import { UserModel } from '../models/user/userModel'
 import { UserSessionContext } from '../contexts/authContext'
 import { useNavigate } from 'react-router-dom'
-import { WithResponseModel } from '../models/withResponse'
 import { BACKEND_TOOLS } from '../models/BACKEND_TOOLS'
+import { useWithResponseContext } from '../contexts/snackBarContext'
+import { useLoadingContext } from '../contexts/loadingContext'
 
 
 type GetUserProps = {
@@ -22,7 +23,6 @@ type DataUserProps = {
     }
 }
 interface DeleteUserProps {
-    setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel|null>>,
     userId:string,
     setUsers:React.Dispatch<React.SetStateAction<UserModel[]|null>>,
     users:UserModel[]
@@ -30,24 +30,23 @@ interface DeleteUserProps {
 
 interface EditUserProps {
     EditData:DataUserProps,
-    setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel | null>>
-    setIsLoading:React.Dispatch<React.SetStateAction<boolean>>,
 }
 
 interface ChangeSelfPasswordProps {
     newPassword:string,
-    setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel | null>>
+    currentPassword:string
 }
 
 interface ChangePasswordProps {
     newPassword:string,
-    setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel | null>>,
     userId:string
 }
 
 function useUser() {
     const { userSession } = useContext(UserSessionContext)
     const navigate = useNavigate()
+    const {setWithResponse} = useWithResponseContext()
+    const {setIsLoading} = useLoadingContext()
     
     async function GetUsers({ range, page, page_size }: GetUserProps) {
         const API = `${BACKEND_TOOLS.API_URI}/user/result?range=${range}&page=${page}&page_size=${page_size}`;
@@ -67,16 +66,14 @@ function useUser() {
           const totalUsers = data.total
           return {users, totalUsers};
         } catch (error) {
-          console.error('Error fetching users:', error);
           return {users:[],totalUsers:0};
         }
       }
-    async function EditUser({EditData, setWithResponse, setIsLoading}:EditUserProps) {
+    async function EditUser({EditData}:EditUserProps) {
         setIsLoading(true)
         const API = BACKEND_TOOLS.API_URI+'/user/'
         if (userSession.user === null){
             navigate('/login')
-            setIsLoading(false)
             return {error:'no user logged'}
         }
         try {
@@ -108,7 +105,7 @@ function useUser() {
             setIsLoading(false)
         }
     }
-    async function DeleteUser({userId, setWithResponse, setUsers, users}:DeleteUserProps) {
+    async function DeleteUser({userId, setUsers, users}:DeleteUserProps) {
         const API = BACKEND_TOOLS.API_URI + `/admin/user/${userId}`
         try{
             const res = await fetch(API,{
@@ -134,8 +131,8 @@ function useUser() {
             setWithResponse({msg:'Ha habido un error, inténtelo más tarde', color:'error'})
         }
     }
-    async function ChangeSelfPassword({newPassword, setWithResponse}:ChangeSelfPasswordProps) {
-        const API = BACKEND_TOOLS.API_URI + `/user/`
+    async function ChangeSelfPassword({newPassword, currentPassword}:ChangeSelfPasswordProps) {
+        const API = BACKEND_TOOLS.API_URI + `/user/selfpassword`
         try{
             const res = await fetch(API,{
                 method:'PUT',
@@ -145,7 +142,8 @@ function useUser() {
                     'Content-Type':'application/json'
                 },
                 body:JSON.stringify({
-                    new_password:newPassword
+                    new_password:newPassword,
+                    current_password:currentPassword
                 })
             })
             const data = await res.json()
@@ -160,7 +158,7 @@ function useUser() {
             setWithResponse({msg:'Ha habido un error, inténtelo más tarde', color:'error'})
         }
     }
-    async function ChangePassword({newPassword, setWithResponse, userId}:ChangePasswordProps) {
+    async function ChangePassword({newPassword, userId}:ChangePasswordProps) {
         const API = BACKEND_TOOLS.API_URI + `/admin/user/${userId}`
         try{
             const res = await fetch(API,{

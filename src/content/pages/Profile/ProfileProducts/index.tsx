@@ -2,23 +2,18 @@ import EditIcon from '@mui/icons-material/Edit';
 import { ProductModel } from '../../../../models/product/productModel';
 import ProductCard from '../../../../components/ProductCard';
 import './index.css'
-import { IconButton, Button } from '@mui/material'
+import { IconButton, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react';
 import SetMinProductDataForm from '../../../../components/SetMinProductData';
 import LampLoader from '../../../../commons/LampLoader';
 import Snackbar from '@mui/material/Snackbar';
 import DeleteIcon from '@mui/icons-material/Delete';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import { Alert, Box } from '@mui/material'
-import { WithResponseModel } from '../../../../models/withResponse';
 import { UserSessionContext } from '../../../../contexts/authContext';
 import OverScreen from '../../../../commons/OverScreen';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import useProducts from '../../../../hooks/useGetProducts';
+import { useLoadingContext } from '../../../../contexts/loadingContext';
 
 interface ProfileProductsProps {
   products:ProductModel[],
@@ -29,8 +24,7 @@ interface ProfileProductsProps {
 
 function ProfileProducts( {products, editing, setSeeResetFilters, setProducts}:ProfileProductsProps){
   const {userSession} = useContext(UserSessionContext)
-  const [ isLoading, setIsLoading ] = useState(false)
-  const [ withResponse, setWithResponse ] = useState<WithResponseModel | null>(null)
+  const {isLoading, setIsLoading} = useLoadingContext()
   const [ managingProduct, setManagingProduct ] = useState(false)
   const [ deletingProduct, setDeletingProduct ] = useState(false)
   const [ selectedProduct, setSelectedProduct ] = useState<ProductModel|null>(null)
@@ -51,7 +45,6 @@ function ProfileProducts( {products, editing, setSeeResetFilters, setProducts}:P
     Products.deleteProduct({
       token:userSession.token!,
       selectedProduct:selectedProduct,
-      setWithResponse:setWithResponse,
       setProducts:setProducts,
       products:products,
       setSelectedProduct:setSelectedProduct
@@ -70,7 +63,6 @@ function ProfileProducts( {products, editing, setSeeResetFilters, setProducts}:P
     Products.changeAvailability({
       token:userSession.token!,
       selectedProduct:selectedProduct,
-      setWithResponse:setWithResponse,
       setSelectedProduct:setSelectedProduct})
     setDeletingProduct(false)
     setIsLoading(false)
@@ -132,16 +124,10 @@ function ProfileProducts( {products, editing, setSeeResetFilters, setProducts}:P
           <Box sx={{fontSize:'35px', position:'absolute', top:8, left:8}}>Editar Producto:</Box>
           <SetMinProductDataForm
           setSelectedProduct={setSelectedProduct}
-          isLoading={isLoading}
           setManagingProduct={setManagingProduct}
-          setWithResponse={setWithResponse}
-          setIsLoading={setIsLoading}
           product={selectedProduct!}/>
         </Box>
       </OverScreen>
-    }
-    {withResponse &&
-      <Snackbar/>
     }
     {deletingProduct && selectedProduct && 
       <Dialog
@@ -167,11 +153,6 @@ function ProfileProducts( {products, editing, setSeeResetFilters, setProducts}:P
       </DialogActions>
     </Dialog>
     }
-    <Snackbar open={withResponse !== null} onClose={() => setWithResponse(null)} autoHideDuration={6000} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-      <Alert  severity={withResponse?.color} sx={{ width: '100%' }}>
-        {withResponse?.msg}
-      </Alert>
-    </Snackbar>
     </>
   )
 }

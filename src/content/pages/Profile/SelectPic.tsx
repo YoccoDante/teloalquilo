@@ -9,27 +9,28 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import EditingPic from './EditingPic';
 import { UserSessionContext } from '../../../contexts/authContext';
-import { WithResponseModel } from '../../../models/withResponse';
 import './index.css'
 import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { BACKEND_TOOLS } from '../../../models/BACKEND_TOOLS';
+import { useWithResponseContext } from '../../../contexts/snackBarContext';
+import { useLoadingContext } from '../../../contexts/loadingContext';
 
 interface MediaDialogProps {
   title:string,
   content:string,
-  setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel | null>>,
   setSelectingPic:React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-export default function MediaDialog({title, content, setWithResponse, setSelectingPic}:MediaDialogProps) {
+export default function MediaDialog({title, content, setSelectingPic}:MediaDialogProps) {
+  const {setWithResponse} = useWithResponseContext()
   const { userSession, setUserSession } = useContext(UserSessionContext)
-  const [ isLoading, setIsLoading ] = useState(false)
   const [ selectedPic, setSelectedPic ] = useState<string|null>(null);
   const [ file, setFile ] = useState<File|null>(null);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate()
+  const {isLoading, setIsLoading} = useLoadingContext()
 
   const handleCancel = () => {
     setSelectingPic(false);

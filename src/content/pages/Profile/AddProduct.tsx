@@ -4,23 +4,22 @@ import React, { useContext, useState } from 'react'
 import CategoryMenu from '../../../commons/CategoryMenu'
 import PhotoPreview from '../../../components/PhotoPreview'
 import { UserSessionContext } from '../../../contexts/authContext'
-import { WithResponseModel } from '../../../models/withResponse'
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { BACKEND_TOOLS } from '../../../models/BACKEND_TOOLS'
+import { useWithResponseContext } from '../../../contexts/snackBarContext'
+import { useLoadingContext } from '../../../contexts/loadingContext'
 
 interface AddProductProps {
-  setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel | null>>,
   setManaging:React.Dispatch<React.SetStateAction<boolean>>,
-  isLoading:boolean,
-  setIsLoading:React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function AddProduct({setWithResponse, setManaging, isLoading, setIsLoading}:AddProductProps) {
+function AddProduct({setManaging}:AddProductProps) {
+  const {isLoading, setIsLoading} = useLoadingContext()
+  const {setWithResponse} = useWithResponseContext()
   const {userSession} = useContext(UserSessionContext)
-  const [ openDialog, setOpenDialog ] = useState(isLoading)
   const [ title, setTitle ] = useState('')
   const [ region, setRegion ] = useState('')
   const [ province, setProvince ] = useState('')

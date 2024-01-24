@@ -1,6 +1,7 @@
-import { Box, Rating, Typography,Autocomplete, TextField, Select, MenuItem } from '@mui/material';
+import { Box, Rating, Typography,Autocomplete, TextField, Select, MenuItem, Button } from '@mui/material';
 import React from 'react';
 import { CATEGORIES, ProductModel } from '../../../../../models/product/productModel';
+import { useLoadingContext } from '../../../../../contexts/loadingContext';
 
 interface ProductTabFilterBarProps {
     products: ProductModel[],
@@ -12,9 +13,11 @@ interface ProductTabFilterBarProps {
     setStarsFilter: React.Dispatch<React.SetStateAction<number|null>>,
     priceFilter: number|null,
     setPriceFilter: React.Dispatch<React.SetStateAction<number|null>>,
+    fetchProducts:any,
 }
 
-function ProductTabFilterBar({products, titleFilter, setTitleFilter, categoryFilter, setCategoryFilter, starsFilter, setStarsFilter, priceFilter, setPriceFilter}:ProductTabFilterBarProps) {
+function ProductTabFilterBar({fetchProducts, products, titleFilter, setTitleFilter, categoryFilter, setCategoryFilter, starsFilter, setStarsFilter, priceFilter, setPriceFilter}:ProductTabFilterBarProps) {
+  const {isLoading} = useLoadingContext()
   return (
     <Box sx={{ display: 'flex', flexDirection: 'row', gap: '15px', mb: 2, p: 2, bgcolor: '#f5f5f5', borderRadius: '5px', alignItems:'center'}}>
       <Box sx={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
@@ -58,6 +61,9 @@ function ProductTabFilterBar({products, titleFilter, setTitleFilter, categoryFil
           variant="outlined"
           type="number"
         />
+      </Box>
+      <Box sx={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+        <Button variant='contained' onClick={() => fetchProducts()} disabled={isLoading}>Refrescar</Button>
       </Box>
     </Box>
   )

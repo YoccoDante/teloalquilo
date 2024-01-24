@@ -6,18 +6,18 @@ import React, { useContext, useEffect, useState } from "react";
 import useUser from "../../hooks/useUser";
 import { UserSessionContext } from "../../contexts/authContext";
 import { WithResponseModel } from "../../models/withResponse";
+import { useLoadingContext } from "../../contexts/loadingContext";
 
 interface SetMinDataProps {
   user:UserModel|null,
   setEditData:React.Dispatch<React.SetStateAction<boolean>>,
   setEditing:React.Dispatch<React.SetStateAction<boolean>>,
-  setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel | null>>,
 }
 
-export const SetMinDataForm= ({user, setEditData, setEditing, setWithResponse}:SetMinDataProps) =>{
+export const SetMinDataForm= ({user, setEditData, setEditing}:SetMinDataProps) =>{
     const SetData = useSetUserData()
+    const {isLoading, setIsLoading} = useLoadingContext()
     const genders = ["male","femail", 'other']
-    const [ isLoading, setIsLoading ] = useState(false)
     const { EditUser } = useUser()
     const { userSession } = useContext(UserSessionContext)
     const minData = [
@@ -31,10 +31,12 @@ export const SetMinDataForm= ({user, setEditData, setEditing, setWithResponse}:S
     }
     const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
       e.preventDefault()
+      setIsLoading(true)
       const editedUser = SetData.getUserDataToEdit()
-      await EditUser({EditData:{token: userSession.token, atributes:editedUser}, setWithResponse:setWithResponse, setIsLoading:setIsLoading})
+      await EditUser({EditData:{token: userSession.token, atributes:editedUser}})
       setEditData(false)
       setEditing(false)
+      setIsLoading(false)
     }
     useEffect(() => {
       if (user) {

@@ -2,9 +2,8 @@ import {FormControlLabel, Box,Avatar,Typography, TextField, Button, Checkbox } f
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useState, useRef } from "react";
 import GenderMenu from "../../../../commons/GenderMenu";
-import { WithResponseModel } from "../../../../models/withResponse";
-import ResponseSnackBar from "../../../../commons/ResponseSnackBar";
 import useAuth from "../../../../hooks/useAuth";
+import { useLoadingContext } from "../../../../contexts/loadingContext";
 
 function CreateUser () {
     const Auth = useAuth()
@@ -15,8 +14,7 @@ function CreateUser () {
     const [password, setPassword] = useState("");
     const [phone_number, setPhone_Number] = useState("");
     const [gender, setGender] = useState('Seleccionar');
-    const [isLoading, setIsLoading] = useState(false);
-    const [withResponse, setWithResponse] = useState<WithResponseModel|null>(null);
+    const {isLoading, setIsLoading} = useLoadingContext()
     const [asHost, setAsHost] = useState(false);
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         setIsLoading(true)
@@ -30,7 +28,7 @@ function CreateUser () {
           "phone_number":phone_number,
           "range":asHost? 'host' : 'user'
         }
-        await Auth.Register({userData, setWithResponse})
+        await Auth.Register({userData})
         setIsLoading(false)
         setName('')
         setLastName("")
@@ -141,9 +139,6 @@ function CreateUser () {
             Registrar
           </Button>
         </Box>
-        {withResponse &&
-          <ResponseSnackBar withResponse={withResponse} setWithResponse={setWithResponse}/>
-        }
       </Box>
     )
 }

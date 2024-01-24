@@ -1,5 +1,5 @@
 import React, { MouseEventHandler } from 'react'
-import { Box } from '@mui/material'
+import { Box, Dialog } from '@mui/material'
 
 interface OverScreenProps {
   children:JSX.Element,

@@ -7,15 +7,13 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ProductModel } from '../../../models/product/productModel';
 import useProducts from '../../../hooks/useGetProducts';
-import { WithResponseModel } from '../../../models/withResponse';
-import ResponseSnackBar from '../../../commons/ResponseSnackBar';
+import { useLoadingContext } from '../../../contexts/loadingContext';
 
 export default function Products() {
   const {filter} = useParams()
   const [products, setProducts] = useState<ProductModel[]>([])
   const [totalProducts, setTotalProducts] = useState(1)
-  const [withResponse, setWithResponse] = useState<WithResponseModel|null>(null)
-  const [isLoading, setIsLoading] = useState(true) // Set initial loading state to true
+  const {isLoading, setIsLoading} = useLoadingContext()
   const productsTools = useFilterProducts( {products} )
   const [page, setPage] = useState(1)
   const [ seeResetFilters, setSeeResetFilters ] = useState(false)
@@ -44,8 +42,7 @@ export default function Products() {
   useEffect(() => {
     const getProducts = async () => {
       setIsLoading(true)
-      const {products, total} = await Products.getProducts({page, page_size, setWithResponse})
-      console.log(products)
+      const {products, total} = await Products.getProducts({page, page_size})
       setProducts(products)
       setTotalProducts(total)
       setIsLoading(false)
@@ -71,9 +68,6 @@ export default function Products() {
       ) : (
         <WedgesLoader/>
       )}
-      {withResponse &&
-        <ResponseSnackBar withResponse={withResponse} setWithResponse={setWithResponse}/>
-      }
       <Pagination 
           count={totalProducts} 
           page={page} 

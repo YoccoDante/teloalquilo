@@ -1,29 +1,27 @@
 import { Box, Typography, TextField,Button,Grid} from '@mui/material'
 import './index.css'
-
 import React, {useContext, useState } from 'react'
 import CategoryMenu from '../../commons/CategoryMenu'
 import PhotoPreview from '../PhotoPreview'
 import { UserSessionContext } from '../../contexts/authContext'
-import { WithResponseModel } from '../../models/withResponse'
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { PRODUCT_CATEGORIES, ProductModel } from '../../models/product/productModel'
+import { ProductModel } from '../../models/product/productModel'
 import { useEffect } from 'react'
 import { BACKEND_TOOLS } from '../../models/BACKEND_TOOLS'
+import { useWithResponseContext } from '../../contexts/snackBarContext'
+import { useLoadingContext } from '../../contexts/loadingContext'
 
 interface SetMinProductDataProps {
   product:ProductModel,
   setSelectedProduct:React.Dispatch<React.SetStateAction<ProductModel | null>>,
-  setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel | null>>,
   setManagingProduct:React.Dispatch<React.SetStateAction<boolean>>,
-  isLoading:boolean,
-  setIsLoading:React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function SetMinProductDataForm ({product, setSelectedProduct, setWithResponse, setManagingProduct, isLoading, setIsLoading}:SetMinProductDataProps) {
+function SetMinProductDataForm ({product, setSelectedProduct, setManagingProduct}:SetMinProductDataProps) {
+  const {setWithResponse} = useWithResponseContext()
   const {userSession} = useContext(UserSessionContext)
   const [ title, setTitle ] = useState(product.title)
   const [ region, setRegion ] = useState(product.region)
@@ -33,6 +31,7 @@ function SetMinProductDataForm ({product, setSelectedProduct, setWithResponse, s
   const [ price, setPrice ] = useState<number>(product.price)
   const [ files, setFiles ] = useState<null | FileList>(null)
   const [ imgs, setImgs ] = useState<string[]>(product.imgs)
+  const {isLoading,setIsLoading} = useLoadingContext()
 
   const handleSelectImgs = (e:React.ChangeEvent<HTMLInputElement>) => {
     const urls = []

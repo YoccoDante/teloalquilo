@@ -1,26 +1,32 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import useUser from '../../../../../hooks/useUser'
+import useUser from '../../../hooks/useUser';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { useWithResponseContext } from '../../../../../contexts/snackBarContext';
-import { useLoadingContext } from '../../../../../contexts/loadingContext';
-import { UserModel } from '../../../../../models/user/userModel';
+import { useWithResponseContext } from '../../../contexts/snackBarContext';
+import { useLoadingContext } from '../../../contexts/loadingContext';
 
-interface ChangePasswordDialogProps {
-    selectedUser:UserModel,
-    setSelectedUser:React.Dispatch<React.SetStateAction<UserModel | null>>,
+interface ChangeSelfPasswordDialogProps {
     setChangePassword:React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-function ChangePasswordDialog({selectedUser,setSelectedUser,setChangePassword}:ChangePasswordDialogProps) {
+function ChangeSelfPasswordDialog({setChangePassword}:ChangeSelfPasswordDialogProps) {
+    const {isLoading, setIsLoading} = useLoadingContext()
     const {setWithResponse} = useWithResponseContext()
     const [newPassword, setNewPassword] = useState<string|null>(null)
     const [passwordValidation, setPasswordValidation] = useState<string|null>(null)
     const [seePassword, setSeePassword] = useState(false)
+    const [seeCurrentPassword, setSeeCurrentPassword] = useState(false)
     const [match, setMatch] = useState<boolean|null>(null)
     const Users = useUser()
-    const {isLoading, setIsLoading} = useLoadingContext()
+    const [currentPassword, setCurrentPassword] = useState<string|null>(null)
+
+    const handleSeeCurrentPassword = () => {
+        setSeePassword(true)
+        setTimeout(() => {
+            setSeePassword(false)
+        },500)
+    }
 
     const handleSeePassword = () => {
         setSeePassword(true)
@@ -30,12 +36,12 @@ function ChangePasswordDialog({selectedUser,setSelectedUser,setChangePassword}:C
     }
 
     const validatePassword = () => {
-        if (!newPassword || !passwordValidation) return
-        if (newPassword !== passwordValidation){
-            setMatch(false)
+        if (!newPassword || !passwordValidation || !currentPassword) return
+        if (newPassword === passwordValidation){
+            setMatch(true)
         }
         else {
-            setMatch(true)
+            setMatch(false)
         }
     }
     const savePassword = async () => {
@@ -44,24 +50,35 @@ function ChangePasswordDialog({selectedUser,setSelectedUser,setChangePassword}:C
             setWithResponse({msg:'Escriba una contraseña', color:'error'})
             return
         }
-        await Users.ChangePassword({
+        await Users.ChangeSelfPassword({
             newPassword:newPassword,
-            userId:selectedUser._id
+            currentPassword:currentPassword!
         })
         setIsLoading(false)
-        setSelectedUser(null)
         setChangePassword(false)
     }
     useEffect(() => {
         validatePassword();
-    }, [passwordValidation]);
-  return (
+    }, [newPassword, passwordValidation, currentPassword]);
+    return (
     <Dialog open>
         <DialogTitle>
             {`Cambiar contraseña de usuario`}
         </DialogTitle>
         <DialogContent sx={{display:'flex', flexDirection:'column'}}>
             Se cambiará la contraseña del usuario, elija una segura
+            <Box sx={{display:'flex', alignItems:'center'}}>
+                <TextField sx={{width:'50%', my:2}} type={seeCurrentPassword?'text':'password'} label={'Contraseña actual'} onChange={(e) => setCurrentPassword(e.target.value)}/>
+                {!seePassword?
+                    <IconButton onClick={handleSeeCurrentPassword}>
+                        <VisibilityIcon/>
+                    </IconButton>
+                    :
+                    <IconButton onClick={() => setSeeCurrentPassword(false)}>
+                        <VisibilityOffIcon/>
+                    </IconButton>
+                }
+            </Box>
             <Box sx={{display:'flex', alignItems:'center'}}>
                 <TextField sx={{width:'50%', my:2}} type={seePassword?'text':'password'} label={'Nueva contraseña'} onChange={(e) => setNewPassword(e.target.value)}/>
                 {!seePassword?
@@ -83,7 +100,6 @@ function ChangePasswordDialog({selectedUser,setSelectedUser,setChangePassword}:C
             <Button
             disabled={isLoading}
             onClick={() => {
-                setSelectedUser(null)
                 setChangePassword(false)
                 setMatch(null)
             }}
@@ -103,4 +119,4 @@ function ChangePasswordDialog({selectedUser,setSelectedUser,setChangePassword}:C
   )
 }
 
-export default ChangePasswordDialog
+export default ChangeSelfPasswordDialog

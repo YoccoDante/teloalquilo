@@ -1,42 +1,41 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo, useRef } from 'react'
 import { UserModel } from '../../../../../models/user/userModel'
 import ProfileCard from '../../../../../components/ProfileCard'
-import { Button, Typography } from '@mui/material'
+import { Box, Button, Pagination, Typography } from '@mui/material'
 import useUser from '../../../../../hooks/useUser'
-import { WithResponseModel } from '../../../../../models/withResponse'
 import OverScreen from '../../../../../commons/OverScreen'
-import useGetProductsById from '../../../../../hooks/useGetProductsById'
 import { ProductModel } from '../../../../../models/product/productModel'
 import UserTabFilterBar from './Filterbar'
 import UserProducts from './UserProducts'
 import ChangePasswordDialog from './ChangePasswordDialog'
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useLoadingContext } from '../../../../../contexts/loadingContext'
+import useProducts from '../../../../../hooks/useGetProducts'
 
 interface UserTabProps {
     users:UserModel[],
-    setIsLoading:React.Dispatch<React.SetStateAction<boolean>>,
-    setWithResponse:React.Dispatch<React.SetStateAction<WithResponseModel | null>>,
-    isLoading:boolean,
     fetchUsers:any,
-    setUsers:React.Dispatch<React.SetStateAction<UserModel[]|null>>
+    setUsers:React.Dispatch<React.SetStateAction<UserModel[]|null>>,
+    fetchProducts:any
 }
 
-function UserTab({users, setIsLoading, setWithResponse, isLoading, fetchUsers, setUsers}:UserTabProps) {
+function UserTab({users, fetchUsers, setUsers, fetchProducts}:UserTabProps) {
     const User = useUser()
-    const [selectedUser, setSelectedUser] = useState<string|null>(null)
+    const {isLoading, setIsLoading} = useLoadingContext()
+    const [selectedUser, setSelectedUser] = useState<UserModel|null>(null)
     const [nameFilter, setNameFilter] = useState<string | null>(null);
     const [rangeFilter, setRangeFilter] = useState<string | null>(null);
     const [starsFilter, setStarsFilter] = useState<number | null>(null);
-    const [products, setProducts] = useState<ProductModel[]>([])
     const [seeProducts, setSeeProducts] = useState(false)
     const [changePassword, setChangePassword] = useState(false)
+    const [seeDetails, setSeeDetails] = useState(false)
+    const lastFetchedUserId = useRef<string | null>(null);
     const handleDeleteUser = async (userId:string) => {
         setIsLoading(true)
-        await User.DeleteUser({userId,setWithResponse,setUsers, users})
+        await User.DeleteUser({userId,setUsers, users})
         setIsLoading(false)
     }
-    const Products = useGetProductsById()
     const filteredUsers = useMemo(() => {
       return users.filter((user) => {
         return (
@@ -46,18 +45,10 @@ function UserTab({users, setIsLoading, setWithResponse, isLoading, fetchUsers, s
         );
       });
     }, [users, nameFilter, rangeFilter, starsFilter]);
-    useEffect(() => {
-        async function getProducts () {
-            if (!selectedUser) return
-            const {products} = await Products.getProducts({userId:selectedUser})
-            setProducts(products)
-        }
-        getProducts()
-    },[selectedUser])
+    
   return (
     <div style={{display:'flex', flexDirection:'column', gap:'15px'}}>
         <UserTabFilterBar
-          isLoading={isLoading}
           fetchUsers={fetchUsers}
           users={users}
           nameFilter={nameFilter}
@@ -81,7 +72,8 @@ function UserTab({users, setIsLoading, setWithResponse, isLoading, fetchUsers, s
                   variant='contained'
                   sx={{ml:2}}
                   onClick={() => {
-                      setSelectedUser(user._id)
+                      setSelectedUser(user)
+                      setSeeProducts(true)
                   }}
                 >
                     Ver productos
@@ -90,26 +82,38 @@ function UserTab({users, setIsLoading, setWithResponse, isLoading, fetchUsers, s
                   sx={{ml:2}}
                   variant='contained'
                   onClick={() => {
-                    setSelectedUser(user._id)
+                    setSelectedUser(user)
                     setChangePassword(true)
                   }}
                 >
                   Cambiar contraseña
                 </Button>
+                <Button
+                  sx={{ml:2}}
+                  variant='contained'
+                  onClick={() => {
+                    setSelectedUser(user)
+                    setSeeDetails(true)
+                  }}
+                >
+                  Ver detalles
+                </Button>
             </div>
         })}
-        {seeProducts && selectedUser && products &&
-            <OverScreen onClick={() => {
-              setSelectedUser(null)
-              setSeeProducts(false)
-            }}>
+        {seeProducts && selectedUser &&
+          <OverScreen onClick={() => {
+            setSeeProducts(false)
+          }}>
+            <>
               <UserProducts
-                products={products} setSelectedUser={setSelectedUser}
-                setIsLoading={setIsLoading}
-                setProducts={setProducts}
-                setWithResponse={setWithResponse}
+                lastFetchedUserId={lastFetchedUserId}
+                setSeeProducts={setSeeProducts}
+                fetchProducts={fetchProducts}
+                seeProducts={seeProducts}
+                selectedUser={selectedUser}
               />
-            </OverScreen>
+            </>
+          </OverScreen>
         }
         {changePassword && selectedUser &&
           <OverScreen onClick={() => {
@@ -117,13 +121,42 @@ function UserTab({users, setIsLoading, setWithResponse, isLoading, fetchUsers, s
             setChangePassword(false)
           }}>
             <ChangePasswordDialog
-              isLoading={isLoading}
               setChangePassword={setChangePassword}
-              setIsLoading={setIsLoading}
               setSelectedUser={setSelectedUser}
-              setWithResponse={setWithResponse}
               selectedUser={selectedUser}
             />
+          </OverScreen>
+        }
+        {seeDetails && selectedUser &&
+          <OverScreen onClick={() => {
+            setSelectedUser(null)
+            setSeeDetails(false)
+          }}>
+            <Box sx={{
+              display:'flex',
+              flexDirection:'column',
+              position:'relative',
+              bgcolor:'#fff',
+              width:'100%',
+              height:'100%',
+              p:2,
+              boxSizing:'border-box'}}>
+              <Button
+                variant='contained'
+                color='error'
+                sx={{position:'absolute', top:'-50px', left:0}}
+                onClick={() => {
+                  setSelectedUser(null)
+                  setSeeDetails(false)
+                }}>
+                Cerrar detalles
+              </Button>
+              <Typography>Nombre: {selectedUser.name}</Typography>
+              <Typography>Apellido: {selectedUser.last_name}</Typography>
+              <Typography>Correo: {selectedUser.email}</Typography>
+              <Typography>Contácto: {selectedUser.phone_number}</Typography>
+              <Typography>Género: {selectedUser.gender}</Typography>
+            </Box>
           </OverScreen>
         }
     </div>
