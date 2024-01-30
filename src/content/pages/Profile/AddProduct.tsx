@@ -11,6 +11,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { BACKEND_TOOLS } from '../../../models/BACKEND_TOOLS'
 import { useWithResponseContext } from '../../../contexts/snackBarContext'
 import { useLoadingContext } from '../../../contexts/loadingContext'
+import { useProfileContext } from '../../../contexts/profileContext'
 
 interface AddProductProps {
   setManaging:React.Dispatch<React.SetStateAction<boolean>>,
@@ -18,6 +19,7 @@ interface AddProductProps {
 
 function AddProduct({setManaging}:AddProductProps) {
   const {isLoading, setIsLoading} = useLoadingContext()
+  const {products, setProducts} = useProfileContext()
   const {setWithResponse} = useWithResponseContext()
   const {userSession} = useContext(UserSessionContext)
   const [ title, setTitle ] = useState('')
@@ -76,6 +78,19 @@ function AddProduct({setManaging}:AddProductProps) {
       const data = await res.json()
       if (res.ok) {
         setWithResponse({msg:'¡Producto cargado Exsitosamente!', color:'success'})
+        const newProduct = {
+          _id:data.product._id,
+          able:data.product.able,
+          category:data.product.category,
+          description:data.product.description,
+          imgs:data.product.imgs,
+          price:data.product.price,
+          province:province,
+          region:data.product.region,
+          stars:data.product.stars,
+          title:data.product.title
+        };
+        setProducts(prevProducts => [...prevProducts, newProduct]);
       }
       if (!res.ok) {
         setWithResponse({msg:JSON.stringify(data), color:'error'})

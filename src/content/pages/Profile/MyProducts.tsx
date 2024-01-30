@@ -2,13 +2,12 @@ import { Container, Typography } from '@mui/material'
 import ProfileProducts from './ProfileProducts';
 import useFilterProducts from '../../../hooks/useFilterProducts';
 import FilterBar from '../../../components/FilterBar'
-import { ProductModel } from '../../../models/product/productModel'
-import React, { useContext, useEffect, useState } from 'react';
-import { Box, Button, SpeedDial,  } from '@mui/material'
-import { UserSessionContext } from '../../../contexts/authContext';
+import { useEffect, useState } from 'react';
+import { Box, Button,} from '@mui/material'
+import { useProfileContext } from '../../../contexts/profileContext';
 
-function MyProducts({products, setProducts}:{products:ProductModel[], setProducts:React.Dispatch<React.SetStateAction<ProductModel[]>>}) {
-  const { userSession } = useContext(UserSessionContext)
+function MyProducts() {
+  const {products, setProducts} = useProfileContext()
   const [ selectedProduct, setSelectedProduct ] = useState(false)
   const [ seeResetFilters, setSeeResetFilters ] = useState(false)
   const productsTools = useFilterProducts( {products} )

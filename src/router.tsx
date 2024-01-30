@@ -5,6 +5,7 @@ import SuspenseLoader from '../src/components/SuspenseLoader';
 import LandingPage from '../src/content/pages/LandingPage'
 import NavBar from './commons/NavBar';
 import RequiredLogin from './components/RequiredLogin';
+import { ProfileProvider } from './contexts/profileContext';
 
 const Loader = (Component:any) => (props:any) =>
   (
@@ -79,7 +80,9 @@ const routes:RouteObject[] = [
           {
             path:'/profile',
             element:<RequiredLogin>
-                      <ProfilePage/>
+                      <ProfileProvider>
+                        <ProfilePage/>
+                      </ProfileProvider>
                     </RequiredLogin>
           }
         ]

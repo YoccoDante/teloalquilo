@@ -13,7 +13,7 @@ interface ProductOperationsProps {
 
 function ProductOperations({setManaging}:ProductOperationsProps) {
   const [ currentTab, setCurrenTab ] = useState('1')
-  const {isLoading, setIsLoading} = useLoadingContext()
+  const {isLoading} = useLoadingContext()
   const handleChange = (e:React.SyntheticEvent, value:string) => {
     setCurrenTab(value)
   }
@@ -30,7 +30,8 @@ function ProductOperations({setManaging}:ProductOperationsProps) {
         overflowX:'hidden',
         display:'flex',
         flexDirection:'column',
-        }}>        <TabContext value={currentTab}>
+        }}>        
+        <TabContext value={currentTab}>
           <Box
           borderBottom={1}
           borderColor='divider'

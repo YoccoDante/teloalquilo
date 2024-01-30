@@ -5,13 +5,13 @@ import { UserSessionContext } from '../../../contexts/authContext'
 import ProfilePage from './ProfilePage'
 import MyProducts from './MyProducts'
 import ProfileOperations from './ProfileOparations'
-import { ProductModel } from '../../../models/product/productModel'
+import { useProfileContext } from '../../../contexts/profileContext'
 import useProducts from '../../../hooks/useGetProducts'
 
 function Profiletabs() {
   const {userSession} = useContext(UserSessionContext)
   const userId = userSession.user!._id
-  const [products, setProducts] = useState<ProductModel[]>([])
+  const {products, setProducts} = useProfileContext()
   const Products = useProducts()
   const [page, setPage] = useState(1)
   const [pages, setPages] = useState(0)
@@ -53,7 +53,7 @@ function Profiletabs() {
         <TabPanel value='2'>
         {products && userSession.user?.range === 'host' &&
           <>
-            <MyProducts products={products} setProducts={setProducts}/>
+            <MyProducts/>
             <Pagination
               count={pages} 
               page={page} 

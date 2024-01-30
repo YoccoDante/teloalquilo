@@ -9,6 +9,7 @@
     margin: 5px;
     cursor: pointer;
     object-fit: cover;
+    border: 2px solid rgb(171, 232, 185);
 }
 .ProfilePicContainer > img {
     height: 100%;

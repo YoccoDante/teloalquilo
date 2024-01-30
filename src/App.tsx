@@ -9,7 +9,7 @@ function App() {
   return (
     <>
       {content}
-      <Snackbar open={withResponse !== null} onClose={() => setWithResponse(null)} autoHideDuration={2000} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+      <Snackbar open={withResponse !== null} onClose={() => setWithResponse(null)} autoHideDuration={3000} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
         <Alert  severity={withResponse?.color} sx={{ width: '100%' }}>
             {withResponse?.msg}
         </Alert>
