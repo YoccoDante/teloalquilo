@@ -95,7 +95,7 @@ function DetailsContent( {root}:DetailsContentProps ) {
         position:'relative'
         }}>
         <Carousel imgs={root.product.imgs}/>
-        <CloseIcon/>
+        <CloseIcon fallBack="/products"/>
       </Box>
       <Box
         sx={{mx:4}}

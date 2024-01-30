@@ -3,12 +3,18 @@ import { useNavigate } from "react-router-dom"
 import './index.css'
 import { useLastUrl } from '../../contexts/pathContext';
 
-function CloseIcon(  ) {
+function CloseIcon({fallBack}:{fallBack?:string}) {
     const navigate = useNavigate()
     const {urlHistory} = useLastUrl()
     const handleCloseIcon = () => {
-      if(urlHistory){
-        navigate(urlHistory[urlHistory.length-2 ])
+      if(urlHistory && urlHistory.length > 1){
+        navigate(urlHistory[urlHistory.length-2])
+      } else {
+        if (fallBack) {
+          navigate(fallBack)
+        } else {
+          navigate('/home')
+        }
       }
     }
   return (
