@@ -9,12 +9,16 @@
     margin: 5px;
     cursor: pointer;
     object-fit: cover;
-    border: 2px solid rgb(171, 232, 185);
+    padding: 2px;
+    background-color: rgb(136, 162, 141);
 }
+
 .ProfilePicContainer > img {
-    height: 100%;
-    width: 100%;
+    height: calc(100% - 2px);
+    width: calc(100% - 2px);
+    border-radius: 100%;
 }
+
 .CardPicContainer {
     border-radius: 50%;
     overflow: hidden;
